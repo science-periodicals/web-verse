@@ -32,7 +32,7 @@ We can refer to the word `sentences` in the first sentence by using the range,
 
 `npm run watch`
 
-open index.html in a browser.
+Open index.html in a browser.
 
 ---
 
