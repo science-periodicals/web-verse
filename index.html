@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <script src="bundle.js"></script>
+    <script>
+      var verse = require('verse');
+      document.addEventListener('DOMContentLoaded', function(e){
+        var $p = document.getElementsByTagName('p');
+        for (var i=0; i<$p.length; i++) {
+          console.log(verse.createKey($p[i]));
+        }
+
+        document.addEventListener('mouseup', function(e){
+          console.log(verse.serializeSelection());
+        });
+      });
+    </script>
+  </head>
+  <body>
+    <button id="restore">restore selection</button>
+
+    <p>
+      One sentence only.
+    </p>
+
+    <p>
+      Dr. N.I.H police.
+    </p>
+
+    <p>
+      One non terminated sentence
+    </p>
+
+    <p>
+      <span>
+        <span>a</span>
+        <span>b</span>
+      </span>
+      <span>c</span>
+    </p>
+
+    <p>
+      Lorem ipsum <span>dolor</span> <em>sit</em> amet,
+      consectetur adipiscing
+      elit. <span>Curabitur <strong>porta</strong> nulla</span> nec
+      volutpat iaculis. Vivamus sed tellus sed tortor ultrices
+      posuere. Praesent porta, felis at congue tincidunt, eros dui
+      hendrerit massa, vitae tincidunt enim diam a diam. Vivamus
+      ultrices nibh dolor, et accumsan nisl tincidunt et. Mauris
+      ornare tellus quis enim gravida, id tempor augue porta. Nunc
+      ultrices felis rhoncus vulputate egestas. Etiam nisi magna,
+      bibendum ut facilisis ornare, suscipit a risus. Maecenas
+      semper lacinia arcu, eu convallis turpis. Etiam pharetra
+      elementum gravida. In vitae aliquet odio, non ultricies
+      risus. Quisque ut urna sit amet velit pharetra vestibulum et
+      sed tellus.
+    </p>
+
+    <p>
+      Duis bibendum nulla dictum tempor euismod. Fusce sed dui in
+      magna gravida fermentum in sed felis. Nulla eu leo molestie,
+      luctus massa consequat, aliquet lorem. Vivamus nec euismod
+      <img alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAACXBIWXMAAAsTAAALEwEAmpwYAAAABGdBTUEAALGOfPtRkwAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VGAAABLElEQVR42qSTQStFURSFP7f3XygyoAwoYSYMPCIpk2egMFSmUvwCRpSRDIwYGbwyVuYykB9y914m951z7nHe6J26dc9u77XXWmdvJLF7/audqx9JYuvyW92LL0li8K2df2r17CPEVk7ftXTclyQqAMmRCwC5I3fS42a4W7y74VYDNAAuJA8AaXIsSACsDgAdAJeFrnnyoMBygKZJJ3b1It0AmsTMDPdEgrujJqHEwCxqznMaD2KgyCDRnEuo8qJhHvx/hcQDbzGoix5Yi4G1TcwZWNEDKwJU+WDkhg2ToDaD+M65YcVB8jg3Y5IY5VQAyyf9gLJw+CqAuYNnAczsPQpgevtBU937kDexcdssj8Ti0ZskMd97CRs3u//U2sjJzbtwH1+/Cf8jS/gbAMmWc42HzdIjAAAAAElFTkSuQmCC">
+      nulla. Maecenas pulvinar semper pharetra. Aenean vitae dolor
+      ornare, congue nunc eu, lobortis arcu. In ac magna lacinia,
+      ultrices quam ultricies, volutpat augue.
+    </p>
+
+  </body>
+</html>

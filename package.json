@@ -1,0 +1,30 @@
+{
+  "name": "verse",
+  "version": "0.0.0",
+  "description": "dynamic paragraph-specific anchor links",
+  "main": "index.js",
+  "scripts": {
+    "build": "node_modules/.bin/browserify index.js | node_modules/.bin/uglifyjs -mc > bundle.js",
+    "watch": "node_modules/.bin/watchify -r ./index.js:verse -o bundle.js -dv"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/standard-analytics/verse.git"
+  },
+  "keywords": [
+    "deep",
+    "linking",
+    "hyperlink"
+  ],
+  "author": "Sebastien Ballesteros",
+  "license": "Apache-v2",
+  "bugs": {
+    "url": "https://github.com/standard-analytics/verse/issues"
+  },
+  "homepage": "https://github.com/standard-analytics/verse",
+  "devDependencies": {
+    "browserify": "^8.1.0",
+    "uglify-js": "^2.4.16",
+    "watchify": "^2.2.1"
+  }
+}
