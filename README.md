@@ -1,37 +1,48 @@
 # verse
 
-Verse for the web (deep linking). Inspired by
-[Emphasis](https://github.com/NYTimes/) by Michael Donohoe but
-leverages the
-[Range interface](https://developer.mozilla.org/en-US/docs/Web/API/Range)
-and
-[selection object](https://developer.mozilla.org/en-US/docs/Web/API/Selection).
+Verses for the web (deep linking text). Inspired by [Emphasis][nyt] by Michael
+Donohoe but leverages the [Range interface][ranges] and
+[selection object][selections].
 
-Identify a paragraph by
+We fingerprint a paragraph by
 
-- Breaking it into Sentences
-- Taking first and last Sentences (ok if that's the same)
-- taking the first character from the first three words of each sentence
+1. Break the text it into sentences [1]
+2. Take the first and last sentences [2]
+3. Take the first character from the first three words of each sentence [3]
 
-Such identifiers [have been shown](http://2014.jsconf.eu/speakers/michael-donohoe-deeplink-to-anything-on-the-web.html) to provide (for articles at least)
+These fingerprints [have been shown][jsconf] to provide a uniqueness for
+reasonably sized documents. Since it's deterministic yet not dependent on all
+content, this method is tolerant to smaller changes in the
+content.
 
-- Uniqueness
-- Consistency
-- Tolerance
-
-From within a paragraph, a region can be referenced by using character
-offset.
-
-For instance, the word ```sentences``` of the following paragraph
+Regions of text can be referenced from within a paragraph by using character
+ranges (counting from 1). For instance, in the following paragraph:
 
     I am a paragraph with 2 sentences.
     I am the second sentence.
 
-can be referred as: ```IaaIat:25-33```.
+We can refer to the word `sentences` in the first sentence by using the range,
+`25-33`. Altogether with the paragraph's fingerprint, this gives us an address of
+`IaaIat:25-33`.
 
 
-## Demo
+## Try it!
 
-```npm run watch```
+`npm run watch`
 
 open index.html in a browser.
+
+---
+
+1: We attempt to be smart about handling full-stops. We'll ignore things like
+   "Dr. Who" and a few similar cases. It's generally enough to avoid getting
+   single word nonsense for our sentences.
+
+2: It's ok if the first and last sentences are the same sentence.
+
+3: Words are defined by tokens composed of a run of non-whitespace characters.
+
+[jsconf]: http://2014.jsconf.eu/speakers/michael-donohoe-deeplink-to-anything-on-the-web.html
+[nyt]: https://github.com/NYTimes/
+[ranges]: https://developer.mozilla.org/en-US/docs/Web/API/Range
+[selections]: https://developer.mozilla.org/en-US/docs/Web/API/Selection
