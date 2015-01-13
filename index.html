@@ -12,7 +12,18 @@
         }
 
         document.addEventListener('mouseup', function(e){
-          console.log(verse.serializeSelection());
+          var sel = verse.serializeSelection();
+          console.log(sel);
+          console.log(sel.key + ':' + sel.startOffset + '-' + sel.endOffset);
+          var range = verse.rangeFromOffsets(sel.$scope, sel.startOffset, sel.endOffset);
+          console.log(range.toString());
+
+          var rsel = window.getSelection();
+          rsel.removeAllRanges();
+          setTimeout(function() {
+            rsel.addRange(range);
+          }, 1000);
+
         });
       });
     </script>
