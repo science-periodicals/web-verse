@@ -18,8 +18,10 @@ content.
 Regions of text can be referenced from within a paragraph by using character
 ranges (counting from 1). For instance, in the following paragraph:
 
-<code><pre>**I** **a**m **a** paragraph with 2 sentences.
-**I** **a**m **t**he second sentence.</pre></code>
+<code>
+**I** **a**m **a** paragraph with 2 sentences.
+**I** **a**m **t**he second sentence.
+</code>
 
 We can refer to the word `sentences` in the first sentence by using the range,
 `25-33`. Altogether with the paragraph's fingerprint, this gives us an address of
