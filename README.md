@@ -6,7 +6,7 @@ Donohoe but leverages the [Range interface][ranges] and
 
 We fingerprint a paragraph by
 
-1. Break the text it into sentences [1]
+1. Break the text into sentences [1]
 2. Take the first and last sentences [2]
 3. Take the first character from the first three words of each sentence [3]
 
@@ -18,8 +18,10 @@ content.
 Regions of text can be referenced from within a paragraph by using character
 ranges (counting from 1). For instance, in the following paragraph:
 
-    I am a paragraph with 2 sentences.
-    I am the second sentence.
+<code>
+**I** **a**m **a** paragraph with 2 sentences.
+**I** **a**m **t**he second sentence.
+</code>
 
 We can refer to the word `sentences` in the first sentence by using the range,
 `25-33`. Altogether with the paragraph's fingerprint, this gives us an address of
@@ -30,7 +32,7 @@ We can refer to the word `sentences` in the first sentence by using the range,
 
 `npm run watch`
 
-open index.html in a browser.
+Open index.html in a browser.
 
 ---
 
