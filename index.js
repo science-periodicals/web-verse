@@ -11,7 +11,7 @@ var crypto = require('crypto')
  * - First character from the first three words of each sentence
  * - Each 6 char key refers to specific Paragraph
  */
-exports.createKey = var createKey = function($p) {
+var createKey = exports.createKey = function($p) {
   var key = '';
   var len = 6;
   var txt = ($p.textContent || '').replace(/[^a-z\. ]+/gi, '').trim();

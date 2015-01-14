@@ -32,7 +32,13 @@ We can refer to the word `sentences` in the first sentence by using the range,
 
 `npm run watch`
 
-Open index.html in a browser.
+Open index.html in a browser. Open the developer console.  Select a
+section in a paragraph. See the identifier in the console, watch the
+selection being regenerated from the identifier.
+
+## Build
+
+`npm run build`
 
 ---
 
@@ -45,6 +51,6 @@ Open index.html in a browser.
 3: Words are defined by tokens composed of a run of non-whitespace characters.
 
 [jsconf]: http://2014.jsconf.eu/speakers/michael-donohoe-deeplink-to-anything-on-the-web.html
-[nyt]: https://github.com/NYTimes/
+[nyt]: https://github.com/NYTimes/Emphasis
 [ranges]: https://developer.mozilla.org/en-US/docs/Web/API/Range
 [selections]: https://developer.mozilla.org/en-US/docs/Web/API/Selection
