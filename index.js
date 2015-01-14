@@ -1,6 +1,7 @@
 // inspired by https://github.com/NYTimes/Emphasis
 
 var crypto = require('crypto')
+  , sbd = require('sbd')
   , levenshtein = require('fast-levenshtein');
 
 /**
@@ -17,9 +18,7 @@ var createKey = exports.createKey = function($p) {
   var txt = ($p.textContent || '').replace(/[^a-z\. ]+/gi, '').trim();
 
   if (txt && txt.length>1) {
-    //TODO use https://github.com/Tessmore/sbd or something similar
-    var lines = txt
-          .split('.')
+    var lines = sbd.sentences(txt)
           .map(function(x) {return x.trim();})
           .filter(function(x) {return x;});
 
