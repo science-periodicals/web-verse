@@ -4,7 +4,7 @@
     <meta charset="utf-8"/>
     <script src="bundle.js"></script>
     <script>
-      var verse = require('verse');
+      var verse = require('web-verse');
       document.addEventListener('DOMContentLoaded', function(e){
         var $ps = document.getElementsByTagName('p');
         console.log('keys: ' + Array.prototype.map.call($ps, function($p) {return verse.createKey($p);}).join(', '));
