@@ -1,6 +1,7 @@
 // inspired by https://github.com/NYTimes/Emphasis
 
-var crypto = require('crypto');
+var crypto = require('crypto')
+  , levenshtein = require('fast-levenshtein');
 
 /**
  * From a Paragraph, generate a Key
@@ -10,7 +11,7 @@ var crypto = require('crypto');
  * - First character from the first three words of each sentence
  * - Each 6 char key refers to specific Paragraph
  */
-function createKey($p) {
+exports.createKey = var createKey = function($p) {
   var key = '';
   var len = 6;
   var txt = ($p.textContent || '').replace(/[^a-z\. ]+/gi, '').trim();
@@ -39,12 +40,7 @@ function createKey($p) {
 };
 
 //key:start-end
-function serializeSelection() {
-
-  //TODO compute prefix and suffix: get all the text nodes, and know
-  //where the selection falls. get prefix and suffix and textnode
-  //before and after the selection
-
+exports.serializeSelection = function() {
   var selection = window.getSelection();
   var range;
   if (!selection.isCollapsed) {
@@ -106,17 +102,17 @@ function serializeSelection() {
   }
 
   var startOffset = textNodes.slice(0, indStartTextNode).reduce(function(a, b){
-    return a + b.textContent.length;
+    return a + b.textContent.trim().length;
   }, 0);
   if (range.startOffset !== undefined) {
-    startOffset += range.startOffset;
+    startOffset += range.startOffset - (startTextNode.textContent.length - startTextNode.textContent.replace(/^\s+/, '').length); //we substract the effect of having trimmed the textContent
   }
 
   var endOffset = textNodes.slice(0, indEndTextNode).reduce(function(a, b){
-    return a + b.textContent.length;
+    return a + b.textContent.trim().length;
   }, 0);
   if (range.endOffset !== undefined) {
-    endOffset += range.endOffset;
+    endOffset += range.endOffset - (endTextNode.textContent.length - endTextNode.textContent.replace(/^\s+/, '').length); //we substract the effect of having trimmed the textContent;
   }
 
   return {
@@ -125,28 +121,30 @@ function serializeSelection() {
     key: createKey($scope),
     startOffset: startOffset,
     endOffset: endOffset,
-    text: selection.toString()
+    text: selection.toString().trim()
   };
 
 };
 
-function rangeFromOffsets($scope, startOffset, endOffset) {
+exports.rangeFromOffsets = function($scope, startOffset, endOffset) {
   var node;
   var it = document.createNodeIterator($scope, NodeFilter.SHOW_TEXT);
   var acc = 0;
   var startNode, endNode, relStartOffset, relEndOffset;
+  var textContent;
 
   while (node = it.nextNode()) {
-    if (relStartOffset === undefined && ((acc + node.textContent.length) >= startOffset)) {
+    textContent = node.textContent.trim();
+    if (relStartOffset === undefined && ((acc + textContent.length) >= startOffset)) {
       startNode = node;
-      relStartOffset = startOffset-acc;
+      relStartOffset = startOffset - acc + (startNode.textContent.length - startNode.textContent.replace(/^\s+/, '').length); //we add back the effect of having trimmed the textContent;
     }
-    if (relEndOffset === undefined && ((acc + node.textContent.length) >= endOffset)) {
+    if (relEndOffset === undefined && ((acc + textContent.length) >= endOffset)) {
       endNode = node;
-      relEndOffset = endOffset-acc;
+      relEndOffset = endOffset-acc + (endNode.textContent.length - endNode.textContent.replace(/^\s+/, '').length); //we add back the effect of having trimmed the textContent;
       break;
     }
-    acc += node.textContent.length;
+    acc += textContent.length;
   }
 
   var range = document.createRange();
@@ -156,7 +154,23 @@ function rangeFromOffsets($scope, startOffset, endOffset) {
   return range;
 };
 
+exports.findKey = function(target, candidates) {
+  var x = {index: undefined, value: undefined, lev: undefined};
 
-exports.createKey = createKey;
-exports.serializeSelection = serializeSelection;
-exports.rangeFromOffsets = rangeFromOffsets;
+  for (var i=0; i<candidates.length; i++) {
+    if (target === canditates[i]) {
+      return {index: i, value: canditates[i], lev: 0};
+    } else { //look for 1st closest Match
+      var ls = levenshtein.get(target.slice(0, 3), canditates[i].slice(0, 3));
+      var le = levenshtein.get(target.slice(-3), canditates[i].slice(-3));
+      var lev = ls+le;
+      if (lev < 3 && ((x.lev === undefined) || (lev<x.lev)) ) {
+        x.index = i;
+        x.value = canditates[i];
+        x.lev = lev;
+      }
+    }
+  }
+
+  return x;
+};

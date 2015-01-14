@@ -6,17 +6,13 @@
     <script>
       var verse = require('verse');
       document.addEventListener('DOMContentLoaded', function(e){
-        var $p = document.getElementsByTagName('p');
-        for (var i=0; i<$p.length; i++) {
-          console.log(verse.createKey($p[i]));
-        }
+        var $ps = document.getElementsByTagName('p');
+        console.log('keys: ' + Array.prototype.map.call($ps, function($p) {return verse.createKey($p);}).join(', '));
 
         document.addEventListener('mouseup', function(e){
           var sel = verse.serializeSelection();
-          console.log(sel);
-          console.log(sel.key + ':' + sel.startOffset + '-' + sel.endOffset);
+          console.log(sel.key + ':' + sel.startOffset + '-' + sel.endOffset + ' -> ' + sel.text);
           var range = verse.rangeFromOffsets(sel.$scope, sel.startOffset, sel.endOffset);
-          console.log(range.toString());
 
           var rsel = window.getSelection();
           rsel.removeAllRanges();
@@ -29,8 +25,6 @@
     </script>
   </head>
   <body>
-    <button id="restore">restore selection</button>
-
     <p>
       One sentence only.
     </p>
