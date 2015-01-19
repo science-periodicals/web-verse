@@ -40,6 +40,11 @@ var createKey = exports.createKey = function($el) {
   return key;
 };
 
+var createHash = exports.createHash = function($el, algorithm) {
+  algorithm = algorithm || 'sha1';
+  return crypto.createHash(algorithm).update($el.textContent.trim()).digest('hex'); //TODO textContent.replace(/\s+/g, ' ') ??
+};
+
 //key:start-end
 exports.serializeSelection = function() {
   var selection = window.getSelection();
@@ -119,7 +124,7 @@ exports.serializeSelection = function() {
 
   return {
     $scope: $scope,
-    sha1: crypto.createHash('sha1').update($scope.textContent.trim()).digest('hex'),
+    sha1: createHash($scope),
     key: createKey($scope),
     startOffset: startOffset,
     endOffset: endOffset,
