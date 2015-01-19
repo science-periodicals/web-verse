@@ -4,18 +4,20 @@ var crypto = require('crypto')
   , sbd = require('sbd')
   , levenshtein = require('fast-levenshtein');
 
+var citeable = exports.citeable = ['P', 'LI', 'DD', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'FIGCAPTION', 'CAPTION', 'ASIDE'];
+
 /**
- * From a Paragraph, generate a Key
- * - Break Paragraph into Sentences
+ * From a block element, generate a Key
+ * - Break block element text content into Sentences
  * - Take first and last Sentences
  * - Sometimes the same. Thats ok.
  * - First character from the first three words of each sentence
- * - Each 6 char key refers to specific Paragraph
+ * - Each 6 char key refers to specific block element
  */
-var createKey = exports.createKey = function($p) {
+var createKey = exports.createKey = function($el) {
   var key = '';
   var len = 6;
-  var txt = ($p.textContent || '').replace(/[^a-z\. ]+/gi, '').trim();
+  var txt = ($el.textContent || '').replace(/[^a-z\. ]+/gi, '').trim();
 
   if (txt && txt.length>1) {
     var lines = sbd.sentences(txt)
@@ -53,8 +55,9 @@ exports.serializeSelection = function() {
     $scope = selection.anchorNode.parentElement; //get closest Element
   };
 
-  // get closest 'P'
-  while ($scope.tagName !== 'P') {
+  // TODO generalize to list of supported block elements
+  // get closest citeable element
+  while (!~citeable.indexOf($scope.tagName)) {
     $scope = $scope.parentElement;
     if ($scope.tagName === 'BODY') {
       return;

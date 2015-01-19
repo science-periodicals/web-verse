@@ -38,7 +38,7 @@ selection being regenerated from the identifier.
 
 ## Build
 
-`npm run build`
+`npm run build` -> create `web-verse.min.js`
 
 ---
 

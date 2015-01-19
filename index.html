@@ -6,8 +6,8 @@
     <script>
       var verse = require('web-verse');
       document.addEventListener('DOMContentLoaded', function(e){
-        var $ps = document.getElementsByTagName('p');
-        console.log('keys: ' + Array.prototype.map.call($ps, function($p) {return verse.createKey($p);}).join(', '));
+        var $els = document.querySelectorAll(verse.citeable.join(', '));
+        console.log('keys: ' + Array.prototype.map.call($els, function($el) {return verse.createKey($el);}).join(', '));
 
         document.addEventListener('mouseup', function(e){
           var sel = verse.serializeSelection();
@@ -25,6 +25,17 @@
     </script>
   </head>
   <body>
+    <h1>H1 <strong>heading</strong></h1>
+
+    <ul>
+      <li>first <em>item</em></li>
+      <li>second item</li>
+    </ul>
+
+    <aside>
+      The movie earned $87 million during its initial release.
+    </aside>
+
     <p>
       One sentence only.
     </p>
