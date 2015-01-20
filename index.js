@@ -165,15 +165,15 @@ exports.findKey = function(target, candidates) {
   var x = {index: undefined, value: undefined, lev: undefined};
 
   for (var i=0; i<candidates.length; i++) {
-    if (target === canditates[i]) {
-      return {index: i, value: canditates[i], lev: 0};
+    if (target === candidates[i]) {
+      return {index: i, value: candidates[i], lev: 0};
     } else { //look for 1st closest Match
-      var ls = levenshtein.get(target.slice(0, 3), canditates[i].slice(0, 3));
-      var le = levenshtein.get(target.slice(-3), canditates[i].slice(-3));
+      var ls = levenshtein.get(target.slice(0, 3), candidates[i].slice(0, 3));
+      var le = levenshtein.get(target.slice(-3), candidates[i].slice(-3));
       var lev = ls+le;
       if (lev < 3 && ((x.lev === undefined) || (lev<x.lev)) ) {
         x.index = i;
-        x.value = canditates[i];
+        x.value = candidates[i];
         x.lev = lev;
       }
     }
