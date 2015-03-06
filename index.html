@@ -11,6 +11,7 @@
 
         document.addEventListener('mouseup', function(e){
           var sel = verse.serializeSelection();
+          if (!sel) return;
           console.log(sel.key + ':' + sel.startOffset + '-' + sel.endOffset + ' -> ' + sel.text);
           var range = verse.rangeFromOffsets(sel.$scope, sel.startOffset, sel.endOffset);
 

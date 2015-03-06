@@ -45,29 +45,28 @@ var createHash = exports.createHash = function($el, algorithm) {
   return crypto.createHash(algorithm).update($el.textContent.trim()).digest('hex'); //TODO textContent.replace(/\s+/g, ' ') ??
 };
 
-//key:start-end
-exports.serializeSelection = function() {
-  var selection = window.getSelection();
-  var range;
-  if (!selection.isCollapsed) {
-    range = selection.getRangeAt(0);
-  } else {
-    return;
-  }
 
+var getScope = exports.getScope = function(range) {
   var $scope = range.commonAncestorContainer;
   if ($scope.nodeType === Node.TEXT_NODE) {
-    $scope = selection.anchorNode.parentElement; //get closest Element
+    $scope = $scope.parentElement; //get closest Element
   };
 
   // TODO generalize to list of supported block elements
   // get closest citeable element
   while (!~citeable.indexOf($scope.tagName)) {
     $scope = $scope.parentElement;
-    if ($scope.tagName === 'BODY') {
+    if ($scope.tagName === 'HTML') {
       return;
     }
   }
+  return $scope;
+};
+
+
+var serializeRange = exports.serializeRange = function(range, $scope) {
+  var $scope = $scope || getScope(range);
+  if (!$scope) return;
 
   var key = createKey($scope);
 
@@ -111,6 +110,7 @@ exports.serializeSelection = function() {
   var startOffset = textNodes.slice(0, indStartTextNode).reduce(function(a, b){
     return a + b.textContent.trim().length;
   }, 0);
+
   if (range.startOffset !== undefined) {
     startOffset += range.startOffset - (startTextNode.textContent.length - startTextNode.textContent.replace(/^\s+/, '').length); //we substract the effect of having trimmed the textContent
   }
@@ -128,9 +128,21 @@ exports.serializeSelection = function() {
     key: createKey($scope),
     startOffset: startOffset,
     endOffset: endOffset,
-    text: selection.toString().trim()
+    text: range.toString().trim()
   };
+};
 
+//key:start-end
+exports.serializeSelection = function() {
+  var selection = window.getSelection();
+  var range;
+  if (!selection.isCollapsed) {
+    range = selection.getRangeAt(0);
+  } else {
+    return;
+  }
+
+  return serializeRange(range);
 };
 
 exports.rangeFromOffsets = function($scope, startOffset, endOffset) {
