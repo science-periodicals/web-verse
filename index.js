@@ -63,12 +63,7 @@ var getScope = exports.getScope = function(range) {
   return $scope;
 };
 
-
-var serializeRange = exports.serializeRange = function(range, $scope) {
-  var $scope = $scope || getScope(range);
-  if (!$scope) return;
-
-  var key = createKey($scope);
+var getOffsets = exports.getOffsets = function(range, $scope) {
 
   var startTextNode, endTextNode;
   if (range.startContainer.nodeType === Node.TEXT_NODE) {
@@ -122,12 +117,22 @@ var serializeRange = exports.serializeRange = function(range, $scope) {
     endOffset += range.endOffset - (endTextNode.textContent.length - endTextNode.textContent.replace(/^\s+/, '').length); //we substract the effect of having trimmed the textContent;
   }
 
+  return {startOffset: startOffset, endOffset: endOffset};
+};
+
+
+var serializeRange = exports.serializeRange = function(range, $scope) {
+  var $scope = $scope || getScope(range);
+  if (!$scope) return;
+
+  var offsets = getOffsets(range, $scope);
+
   return {
     $scope: $scope,
     sha1: createHash($scope),
     key: createKey($scope),
-    startOffset: startOffset,
-    endOffset: endOffset,
+    startOffset: offsets.startOffset,
+    endOffset: offsets.endOffset,
     text: range.toString().trim()
   };
 };
