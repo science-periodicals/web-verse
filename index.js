@@ -42,7 +42,7 @@ var createKey = exports.createKey = function($el) {
 
 var createHash = exports.createHash = function($el, algorithm) {
   algorithm = algorithm || 'sha1';
-  return crypto.createHash(algorithm).update($el.textContent.trim()).digest('hex'); //TODO textContent.replace(/\s+/g, ' ') ??
+  return crypto.createHash(algorithm).update($el.textContent.trim(), 'utf8').digest('hex'); //TODO textContent.replace(/\s+/g, ' ') ??
 };
 
 
