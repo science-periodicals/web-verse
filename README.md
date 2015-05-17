@@ -1,4 +1,4 @@
-# verse
+# web-verse
 
 Verses for the web (deep linking text). Inspired by [Emphasis][nyt] by Michael
 Donohoe but leverages the [Range interface][ranges] and
@@ -39,6 +39,10 @@ selection being regenerated from the identifier.
 ## Build
 
 `npm run build` -> create `web-verse.min.js`
+
+## Tests
+
+`npm run test`
 
 ---
 

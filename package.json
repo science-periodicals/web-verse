@@ -1,11 +1,12 @@
 {
   "name": "web-verse",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "dynamic paragraph-specific anchor links",
   "main": "index.js",
   "scripts": {
     "build": "node_modules/.bin/browserify index.js | node_modules/.bin/uglifyjs -mc > web-verse.min.js",
-    "watch": "node_modules/.bin/watchify -r ./index.js:web-verse -o bundle.js -dv"
+    "watch": "node_modules/.bin/watchify -r ./index.js:web-verse -o bundle.js -dv",
+    "test": "./node_modules/.bin/mocha"
   },
   "repository": {
     "type": "git",
@@ -24,10 +25,13 @@
   "homepage": "https://github.com/standard-analytics/web-verse",
   "dependencies": {
     "fast-levenshtein": "1.0.6",
-    "sbd": "0.0.5"
+    "sbd": "0.0.5",
+    "uuid": "^2.0.1"
   },
   "devDependencies": {
     "browserify": "^8.1.0",
+    "jsdom": "^5.4.1",
+    "mocha": "^2.2.5",
     "uglify-js": "^2.4.16",
     "watchify": "^2.2.1"
   }

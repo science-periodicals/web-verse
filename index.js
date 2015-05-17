@@ -2,6 +2,7 @@
 
 var crypto = require('crypto')
   , sbd = require('sbd')
+  , uuid = require('uuid')
   , levenshtein = require('fast-levenshtein');
 
 var citeable = exports.citeable = ['P', 'LI', 'DD', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'FIGCAPTION', 'CAPTION', 'ASIDE'];
@@ -29,9 +30,9 @@ var createKey = exports.createKey = function($el) {
       var last = lines[lines.length-1].match(/\S+/g).slice(0, (len/2));
       var k = first.concat(last);
 
-      var max = (k.length>len) ? len : k.length;
+      var max = (k.length > len) ? len : k.length;
 
-      for (var i=0; i<max; i++) {
+      for (var i=0; i < max; i++) {
         key += k[i].substring(0, 1);
       }
     }
@@ -69,7 +70,7 @@ var getOffsets = exports.getOffsets = function(range, $scope) {
   if (range.startContainer.nodeType === Node.TEXT_NODE) {
     startTextNode = range.startContainer;
   } else {
-    for (var i=0; i<range.startContainer.childNodes.length; i++) {
+    for (var i=0; i < range.startContainer.childNodes.length; i++) {
       if (range.startContainer.childNodes[i].nodeType === Node.TEXT_NODE) {
         startTextNode = range.startContainer.childNodes[i];
         break;
@@ -80,7 +81,7 @@ var getOffsets = exports.getOffsets = function(range, $scope) {
   if (range.endContainer.nodeType === Node.TEXT_NODE) {
     endTextNode = range.endContainer;
   } else {
-    for (var j=0; j<range.endContainer.childNodes.length; j++) {
+    for (var j=0; j < range.endContainer.childNodes.length; j++) {
       if (range.endContainer.childNodes[j].nodeType === Node.TEXT_NODE) {
         endTextNode = range.endContainer.childNodes[j];
         break;
@@ -181,14 +182,14 @@ exports.rangeFromOffsets = function($scope, startOffset, endOffset) {
 exports.findKey = function(target, candidates) {
   var x = {index: undefined, value: undefined, lev: undefined};
 
-  for (var i=0; i<candidates.length; i++) {
+  for (var i=0; i < candidates.length; i++) {
     if (target === candidates[i]) {
       return {index: i, value: candidates[i], lev: 0};
     } else { //look for 1st closest Match
       var ls = levenshtein.get(target.slice(0, 3), candidates[i].slice(0, 3));
       var le = levenshtein.get(target.slice(-3), candidates[i].slice(-3));
       var lev = ls+le;
-      if (lev < 3 && ((x.lev === undefined) || (lev<x.lev)) ) {
+      if (lev < 3 && ((x.lev === undefined) || (lev < x.lev)) ) {
         x.index = i;
         x.value = candidates[i];
         x.lev = lev;
@@ -197,4 +198,16 @@ exports.findKey = function(target, candidates) {
   }
 
   return x;
+};
+
+
+exports.addIdentifiers = function($doc) {
+  Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), function($el) {
+    $el.setAttribute('data-id', uuid.v1());
+    $el.setAttribute('data-hash', createHash($el));
+    if (~citeable.indexOf($el.tagName)) {
+      $el.setAttribute('data-key', createKey($el));
+    }
+  });
+  return $doc;
 };
