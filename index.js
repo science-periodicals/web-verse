@@ -211,3 +211,38 @@ exports.addIdentifiers = function($doc) {
   });
   return $doc;
 };
+
+exports.getChildOffsets = function($parent, $child) {
+  var startTextNode;
+  if ($child.nodeType === Node.TEXT_NODE) {
+    startTextNode = $child;
+  } else {
+    for (var i = 0; i < $child.childNodes.length; i++) {
+      if ($child.childNodes[i].nodeType === Node.TEXT_NODE) {
+        startTextNode = $child.childNodes[i];
+        break;
+      }
+    }
+  }
+
+  var node, indStartTextNode, ind = 0, textNodes = [];
+  var it = document.createNodeIterator($parent, NodeFilter.SHOW_TEXT);
+  while (node = it.nextNode()) {
+    textNodes.push(node);
+    if (node === startTextNode) {
+      indStartTextNode = ind;
+      break;
+    }
+    ind++;
+  }
+
+  var startOffset = textNodes.slice(0, indStartTextNode).reduce(function(a, b) {
+    return a + b.textContent.trim().length;
+  }, 0);
+
+  var endOffset = textNodes.slice(0, indStartTextNode + 1).reduce(function(a, b) {
+    return a + b.textContent.trim().length;
+  }, 0);
+
+  return { startOffset: startOffset, endOffset: endOffset };
+};
