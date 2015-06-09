@@ -151,7 +151,7 @@ exports.serializeSelection = function() {
   return serializeRange(range);
 };
 
-exports.rangeFromOffsets = function($scope, startOffset, endOffset) {
+var rangeFromOffsets = exports.rangeFromOffsets = function($scope, startOffset, endOffset) {
   var node;
   var it = document.createNodeIterator($scope, NodeFilter.SHOW_TEXT);
   var acc = 0;
@@ -245,4 +245,25 @@ exports.getChildOffsets = function($parent, $child) {
   }, 0);
 
   return { startOffset: startOffset, endOffset: endOffset };
+};
+
+exports.getSerializationsFromText = function($scope, text) {
+  text = text.trim();
+  var re = new RegExp(text, 'ig');
+  var textNode;
+  var textContent = '';
+  var it = document.createNodeIterator($scope, NodeFilter.SHOW_TEXT);
+  while (textNode = it.nextNode()) {
+    textContent += textNode.textContent.trim();
+  }
+
+  var result;
+  var matchIndexes = [];
+  while ((result = re.exec(textContent)) !== null) {
+    matchIndexes.push(result.index);
+  }
+
+  return matchIndexes.map(function(index) {
+    return serializeRange(rangeFromOffsets($scope, index, index + text.length), $scope);
+  });
 };
