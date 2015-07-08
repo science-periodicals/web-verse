@@ -6,9 +6,7 @@
     <script>
       var verse = require('web-verse');
       document.addEventListener('DOMContentLoaded', function(e){
-        var $els = document.querySelectorAll(verse.citeable.join(', '));
-        console.log('keys: ' + Array.prototype.map.call($els, function($el) {return verse.createKey($el);}).join(', '));
-
+        verse.addIdentifiers(document);
         document.addEventListener('mouseup', function(e){
           var sel = verse.serializeSelection();
           if (!sel) return;
