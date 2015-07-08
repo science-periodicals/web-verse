@@ -116,7 +116,7 @@ var getOffsets = exports.getOffsets = function(range, $scope) {
 
 
 var serializeRange = exports.serializeRange = function(range, $scope) {
-  var $scope = $scope || getScope(range);
+  $scope = $scope || getScope(range);
   if (!$scope) return;
 
   var offsets = getOffsets(range, $scope);
@@ -194,10 +194,9 @@ exports.findKey = function(target, candidates) {
 
 
 exports.addIdentifiers = function($doc) {
+  $doc.body.setAttribute('data-key', createKey($doc.body));
   Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), function($el) {
-    $el.setAttribute('data-id', uuid.v1());
-    $el.setAttribute('data-hash', createHash($el));
-    if (~citeable.indexOf($el.tagName)) {
+    if (!~notCiteable.indexOf($el.tagName)) {
       $el.setAttribute('data-key', createKey($el));
     }
   });
