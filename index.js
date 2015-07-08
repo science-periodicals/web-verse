@@ -1,8 +1,6 @@
 // inspired by https://github.com/NYTimes/Emphasis
 
-var crypto = require('crypto')
-  , sbd = require('sbd')
-  , uuid = require('uuid')
+var sbd = require('sbd')
   , levenshtein = require('fast-levenshtein');
 
 var notCiteable = ['SCRIPT', 'STYLE', 'NOSCRIPT'];
