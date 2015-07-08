@@ -41,12 +41,6 @@ var createKey = exports.createKey = function($el) {
   return key;
 };
 
-var createHash = exports.createHash = function($el, algorithm) {
-  algorithm = algorithm || 'sha1';
-  return crypto.createHash(algorithm).update($el.textContent.trim(), 'utf8').digest('hex'); //TODO textContent.replace(/\s+/g, ' ') ??
-};
-
-
 var getScope = exports.getScope = function(range) {
   var $scope = range.commonAncestorContainer;
   if ($scope.nodeType === Node.TEXT_NODE) {
@@ -129,7 +123,6 @@ var serializeRange = exports.serializeRange = function(range, $scope) {
 
   return {
     $scope: $scope,
-    sha1: createHash($scope),
     key: createKey($scope),
     startOffset: offsets.startOffset,
     endOffset: offsets.endOffset,
