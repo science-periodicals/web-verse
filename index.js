@@ -5,7 +5,7 @@ var crypto = require('crypto')
   , uuid = require('uuid')
   , levenshtein = require('fast-levenshtein');
 
-var citeable = exports.citeable = ['P', 'LI', 'DD', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'FIGCAPTION', 'CAPTION', 'ASIDE'];
+var notCiteable = ['SCRIPT', 'STYLE', 'NOSCRIPT'];
 
 /**
  * From a block element, generate a Key
@@ -22,8 +22,8 @@ var createKey = exports.createKey = function($el) {
 
   if (txt && txt.length>1) {
     var lines = sbd.sentences(txt)
-          .map(function(x) {return x.trim();})
-          .filter(function(x) {return x;});
+      .map(function(x) {return x.trim();})
+      .filter(function(x) {return x;});
 
     if (lines.length) {
       var first = lines[0].match(/\S+/g).slice(0, (len/2));
@@ -51,11 +51,10 @@ var getScope = exports.getScope = function(range) {
   var $scope = range.commonAncestorContainer;
   if ($scope.nodeType === Node.TEXT_NODE) {
     $scope = $scope.parentElement; //get closest Element
-  };
+  }
 
-  // TODO generalize to list of supported block elements
   // get closest citeable element
-  while (!~citeable.indexOf($scope.tagName)) {
+  while (~notCiteable.indexOf($scope.tagName)) {
     $scope = $scope.parentElement;
     if ($scope.tagName === 'HTML') {
       return;
