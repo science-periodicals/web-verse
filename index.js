@@ -1,8 +1,6 @@
 // inspired by https://github.com/NYTimes/Emphasis
 
-var crypto = require('crypto')
-  , sbd = require('sbd')
-  , uuid = require('uuid')
+var sbd = require('sbd')
   , levenshtein = require('fast-levenshtein');
 
 var notCiteable = ['SCRIPT', 'STYLE', 'NOSCRIPT'];
@@ -40,12 +38,6 @@ var createKey = exports.createKey = function($el) {
 
   return key;
 };
-
-var createHash = exports.createHash = function($el, algorithm) {
-  algorithm = algorithm || 'sha1';
-  return crypto.createHash(algorithm).update($el.textContent.trim(), 'utf8').digest('hex'); //TODO textContent.replace(/\s+/g, ' ') ??
-};
-
 
 var getScope = exports.getScope = function(range) {
   var $scope = range.commonAncestorContainer;
@@ -122,14 +114,13 @@ var getOffsets = exports.getOffsets = function(range, $scope) {
 
 
 var serializeRange = exports.serializeRange = function(range, $scope) {
-  var $scope = $scope || getScope(range);
+  $scope = $scope || getScope(range);
   if (!$scope) return;
 
   var offsets = getOffsets(range, $scope);
 
   return {
     $scope: $scope,
-    sha1: createHash($scope),
     key: createKey($scope),
     startOffset: offsets.startOffset,
     endOffset: offsets.endOffset,
@@ -201,10 +192,9 @@ exports.findKey = function(target, candidates) {
 
 
 exports.addIdentifiers = function($doc) {
+  $doc.body.setAttribute('data-key', createKey($doc.body));
   Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), function($el) {
-    $el.setAttribute('data-id', uuid.v1());
-    $el.setAttribute('data-hash', createHash($el));
-    if (~citeable.indexOf($el.tagName)) {
+    if (!~notCiteable.indexOf($el.tagName)) {
       $el.setAttribute('data-key', createKey($el));
     }
   });
