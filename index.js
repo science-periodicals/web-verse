@@ -4,7 +4,7 @@ var sbd = require('sbd'),
     crypto = require('crypto'),
     levenshtein = require('fast-levenshtein');
 
-var elementBlacklist = ['SCRIPT', 'STYLE', 'NOSCRIPT'];
+var elementBlacklist = ['script', 'style', 'noscript'];
 
 /**
  * From a block element, generate a Key
@@ -53,9 +53,9 @@ var getScope = exports.getScope = function(range) {
   }
 
   // get closest citeable element
-  while (~elementBlacklist.indexOf($scope.tagName)) {
+  while (~elementBlacklist.indexOf($scope.tagName.toLowerCase())) {
     $scope = $scope.parentElement;
-    if ($scope.tagName === 'HTML') {
+    if ($scope.tagName.toLowerCase() === 'html') {
       return;
     }
   }
@@ -204,6 +204,10 @@ var identifier = {
 };
 
 exports.setBlacklist = function(blacklist){
+  for(var i = 0; i < blacklist.length; i++){
+    blacklist[i] = blacklist[i].toLowerCase();
+  }
+
   elementBlacklist = blacklist;
 };
 
@@ -220,7 +224,7 @@ exports.addIdentifiers = function($doc) {
   $doc.body.setAttribute(identifier['hash'], createHash($doc.body));
 
   Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), function($el) {
-    if (!~elementBlacklist.indexOf($el.tagName)) {
+    if (!~elementBlacklist.indexOf($el.tagName.toLowerCase())) {
       $el.setAttribute(identifier['key'], createKey($el));
       $el.setAttribute(identifier['hash'], createHash($el));
     }

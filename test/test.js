@@ -28,7 +28,7 @@ describe('webverse', function() {
   describe('setBlacklist', function(){
     var $doc;
     before(function(done) {
-      var html = '<html><body><h1></h1></body></html>';
+      var html = '<html><body><h1></h1><span></span></body></html>';
       jsdom.env(html, function (err, window) {
         if (err) throw err;
         $doc = window.document;
@@ -37,13 +37,18 @@ describe('webverse', function() {
     });
 
     it('should allow to set blacklist', function(){
-      webVerse.setBlacklist(['H1']);
+      webVerse.setBlacklist(['H1', 'span']);
       webVerse.addIdentifiers($doc);
 
       var $h1 = $doc.getElementsByTagName('h1')[0];
 
       assert(!$h1.hasAttribute('test-key'));
       assert(!$h1.hasAttribute('test-hash'));
+
+      var $span = $doc.getElementsByTagName('span')[0];
+
+      assert(!$span.hasAttribute('test-key'));
+      assert(!$span.hasAttribute('test-hash'));
     })
   });
 
@@ -61,6 +66,7 @@ describe('webverse', function() {
     });
 
     it('should add identifiers', function() {
+      webVerse.setBlacklist([]);
       webVerse.addIdentifiers($doc);
       var $section = $doc.getElementsByTagName('section')[0];
 
