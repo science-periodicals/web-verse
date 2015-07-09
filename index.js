@@ -198,14 +198,26 @@ exports.findKey = function(target, candidates) {
   return x;
 };
 
+var identifier = {
+  'key': 'data-key',
+  'hash': 'data-hash'
+};
+
+exports.setIdentifier = function(identifierOptions){
+  for(var i in identifier){
+    if(typeof identifierOptions[i] === 'string'){
+      identifier[i] = identifierOptions[i];
+    }
+  }
+};
 
 exports.addIdentifiers = function($doc) {
-  $doc.body.setAttribute('data-key', createKey($doc.body));
-  $doc.body.setAttribute('data-hash', createHash($doc.body));
+  $doc.body.setAttribute(identifier['key'], createKey($doc.body));
+  $doc.body.setAttribute(identifier['hash'], createHash($doc.body));
   Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), function($el) {
     if (!~notCiteable.indexOf($el.tagName)) {
-      $el.setAttribute('data-key', createKey($el));
-      $el.setAttribute('data-hash', createHash($el));
+      $el.setAttribute(identifier['key'], createKey($el));
+      $el.setAttribute(identifier['hash'], createHash($el));
     }
   });
   return $doc;

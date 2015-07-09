@@ -52,10 +52,16 @@ describe('webverse', function() {
       assert($h1.getAttribute('data-key'));
       assert($h1.getAttribute('data-hash'));
 
+      webVerse.setIdentifier({
+        key: 'test-key',
+        hash: 'test-hash'
+      });
+
+      $citeable = webVerse.addIdentifiers($doc);
       var $body = $citeable.getElementsByTagName('body')[0];
 
-      assert($body.getAttribute('data-key'));
-      assert($body.getAttribute('data-hash'));
+      assert($body.getAttribute('test-key'));
+      assert($body.getAttribute('test-hash'));
     });
 
   });
