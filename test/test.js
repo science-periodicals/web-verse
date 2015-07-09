@@ -42,10 +42,20 @@ describe('webverse', function() {
 
     it('should add identifiers', function() {
       var $citeable = webVerse.addIdentifiers($doc);
+      var $section = $citeable.getElementsByTagName('section')[0];
 
-      assert($citeable.getElementsByTagName('section')[0].getAttribute('data-key'));
-      assert($citeable.getElementsByTagName('h1')[0].getAttribute('data-key'));
-      assert($citeable.getElementsByTagName('body')[0].getAttribute('data-key'));
+      assert($section.getAttribute('data-key'));
+      assert($section.getAttribute('data-hash'));
+
+      var $h1 = $citeable.getElementsByTagName('h1')[0];
+
+      assert($h1.getAttribute('data-key'));
+      assert($h1.getAttribute('data-hash'));
+
+      var $body = $citeable.getElementsByTagName('body')[0];
+
+      assert($body.getAttribute('data-key'));
+      assert($body.getAttribute('data-hash'));
     });
 
   });

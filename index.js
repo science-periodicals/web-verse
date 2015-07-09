@@ -1,7 +1,8 @@
 // inspired by https://github.com/NYTimes/Emphasis
 
-var sbd = require('sbd')
-  , levenshtein = require('fast-levenshtein');
+var sbd = require('sbd'),
+    crypto = require('crypto'),
+    levenshtein = require('fast-levenshtein');
 
 var notCiteable = ['SCRIPT', 'STYLE', 'NOSCRIPT'];
 
@@ -38,6 +39,12 @@ var createKey = exports.createKey = function($el) {
 
   return key;
 };
+
+var createHash = exports.createHash = function($el, algorithm) {
+  algorithm = algorithm || 'sha1';
+  return crypto.createHash(algorithm).update($el.textContent.trim(), 'utf8').digest('hex'); //TODO textContent.replace(/\s+/g, ' ') ??
+};
+
 
 var getScope = exports.getScope = function(range) {
   var $scope = range.commonAncestorContainer;
@@ -121,6 +128,7 @@ var serializeRange = exports.serializeRange = function(range, $scope) {
 
   return {
     $scope: $scope,
+    sha1: createHash($scope),
     key: createKey($scope),
     startOffset: offsets.startOffset,
     endOffset: offsets.endOffset,
@@ -193,9 +201,11 @@ exports.findKey = function(target, candidates) {
 
 exports.addIdentifiers = function($doc) {
   $doc.body.setAttribute('data-key', createKey($doc.body));
+  $doc.body.setAttribute('data-hash', createHash($doc.body));
   Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), function($el) {
     if (!~notCiteable.indexOf($el.tagName)) {
       $el.setAttribute('data-key', createKey($el));
+      $el.setAttribute('data-hash', createHash($el));
     }
   });
   return $doc;
