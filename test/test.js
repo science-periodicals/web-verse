@@ -6,9 +6,7 @@ var assert = require('assert')
 describe('webverse', function() {
 
   describe('createKey', function() {
-
     var $doc;
-
     before(function(done) {
       var html = '<html><body><style></style><p>    I am a paragraph with 2 sentences.    I am the second sentence.</p></body></html>';
       jsdom.env(html, function (err, window) {
@@ -23,8 +21,30 @@ describe('webverse', function() {
     });
 
     it('should not compute a key', function() {
-      assert(!webVerse.createKey($doc.getElementsByTagName('style')[0]));
+      assert(!$doc.getElementsByTagName('style')[0].hasAttribute('data-key'));
     });
+  });
+
+  describe('setBlacklist', function(){
+    var $doc;
+    before(function(done) {
+      var html = '<html><body><h1></h1></body></html>';
+      jsdom.env(html, function (err, window) {
+        if (err) throw err;
+        $doc = window.document;
+        done();
+      });
+    });
+
+    it('should allow to set blacklist', function(){
+      webVerse.setBlacklist(['H1']);
+      webVerse.addIdentifiers($doc);
+
+      var $h1 = $doc.getElementsByTagName('h1')[0];
+
+      assert(!$h1.hasAttribute('test-key'));
+      assert(!$h1.hasAttribute('test-hash'));
+    })
   });
 
   describe('addIdentifiers', function() {
@@ -41,13 +61,13 @@ describe('webverse', function() {
     });
 
     it('should add identifiers', function() {
-      var $citeable = webVerse.addIdentifiers($doc);
-      var $section = $citeable.getElementsByTagName('section')[0];
+      webVerse.addIdentifiers($doc);
+      var $section = $doc.getElementsByTagName('section')[0];
 
       assert($section.getAttribute('data-key'));
       assert($section.getAttribute('data-hash'));
 
-      var $h1 = $citeable.getElementsByTagName('h1')[0];
+      var $h1 = $doc.getElementsByTagName('h1')[0];
 
       assert($h1.getAttribute('data-key'));
       assert($h1.getAttribute('data-hash'));
@@ -56,14 +76,6 @@ describe('webverse', function() {
         key: 'test-key',
         hash: 'test-hash'
       });
-
-      $citeable = webVerse.addIdentifiers($doc);
-      var $body = $citeable.getElementsByTagName('body')[0];
-
-      assert($body.getAttribute('test-key'));
-      assert($body.getAttribute('test-hash'));
     });
-
   });
-
 });

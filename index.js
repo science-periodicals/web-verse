@@ -4,7 +4,7 @@ var sbd = require('sbd'),
     crypto = require('crypto'),
     levenshtein = require('fast-levenshtein');
 
-var notCiteable = ['SCRIPT', 'STYLE', 'NOSCRIPT'];
+var elementBlacklist = ['SCRIPT', 'STYLE', 'NOSCRIPT'];
 
 /**
  * From a block element, generate a Key
@@ -53,7 +53,7 @@ var getScope = exports.getScope = function(range) {
   }
 
   // get closest citeable element
-  while (~notCiteable.indexOf($scope.tagName)) {
+  while (~elementBlacklist.indexOf($scope.tagName)) {
     $scope = $scope.parentElement;
     if ($scope.tagName === 'HTML') {
       return;
@@ -203,6 +203,10 @@ var identifier = {
   'hash': 'data-hash'
 };
 
+exports.setBlacklist = function(blacklist){
+  elementBlacklist = blacklist;
+};
+
 exports.setIdentifier = function(identifierOptions){
   for(var i in identifier){
     if(typeof identifierOptions[i] === 'string'){
@@ -214,8 +218,9 @@ exports.setIdentifier = function(identifierOptions){
 exports.addIdentifiers = function($doc) {
   $doc.body.setAttribute(identifier['key'], createKey($doc.body));
   $doc.body.setAttribute(identifier['hash'], createHash($doc.body));
+
   Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), function($el) {
-    if (!~notCiteable.indexOf($el.tagName)) {
+    if (!~elementBlacklist.indexOf($el.tagName)) {
       $el.setAttribute(identifier['key'], createKey($el));
       $el.setAttribute(identifier['hash'], createHash($el));
     }
