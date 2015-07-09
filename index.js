@@ -53,7 +53,7 @@ var getScope = exports.getScope = function(range) {
   }
 
   // get closest citeable element
-  while (~elementBlacklist.indexOf($scope.tagName.toLowerCase())) {
+  while (isBlacklisted($scope.tagName.toLowerCase())) {
     $scope = $scope.parentElement;
     if ($scope.tagName.toLowerCase() === 'html') {
       return;
@@ -203,20 +203,43 @@ var identifier = {
   'hash': 'data-hash'
 };
 
-exports.setBlacklist = function(blacklist){
-  for(var i = 0; i < blacklist.length; i++){
-    blacklist[i] = blacklist[i].toLowerCase();
+exports.setBlacklist = function(blacklist) {
+  for (var i = 0; i < blacklist.length; i++) {
+    if (typeof blacklist[i] === 'string') {
+      blacklist[i] = blacklist[i].toLowerCase();
+    }
   }
 
   elementBlacklist = blacklist;
 };
 
-exports.setIdentifier = function(identifierOptions){
-  for(var i in identifier){
-    if(typeof identifierOptions[i] === 'string'){
+exports.setIdentifier = function(identifierOptions) {
+  for (var i in identifier) {
+    if (typeof identifierOptions[i] === 'string') {
       identifier[i] = identifierOptions[i];
     }
   }
+};
+
+var isBlacklisted = function(tagName) {
+  if (elementBlacklist.indexOf(tagName) !== -1) {
+    console.log('is blacklisted', true, tagName)
+    return true;
+  }
+
+  for (var i in elementBlacklist) {
+    var filter = elementBlacklist[i];
+    if(typeof filter === 'object'){
+      console.log(filter, filter.test(tagName), tagName)
+    }
+    if (typeof filter === 'object' && filter.test(tagName)) {
+      console.log('is blacklisted', true, tagName)
+      return true;
+    }
+  }
+
+  console.log('is blacklisted', false, tagName)
+  return false;
 };
 
 exports.addIdentifiers = function($doc) {
@@ -224,7 +247,7 @@ exports.addIdentifiers = function($doc) {
   $doc.body.setAttribute(identifier['hash'], createHash($doc.body));
 
   Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), function($el) {
-    if (!~elementBlacklist.indexOf($el.tagName.toLowerCase())) {
+    if (!isBlacklisted($el.tagName.toLowerCase())) {
       $el.setAttribute(identifier['key'], createKey($el));
       $el.setAttribute(identifier['hash'], createHash($el));
     }
