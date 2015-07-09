@@ -5,6 +5,14 @@ var assert = require('assert')
 
 describe('webverse', function() {
 
+  beforeEach(function(){
+    webVerse.setBlacklist([]);
+    webVerse.setIdentifier({
+      key: 'data-key',
+      hash: 'data-hash'
+    });
+  });
+
   describe('createKey', function() {
     var $doc;
     before(function(done) {
@@ -42,14 +50,33 @@ describe('webverse', function() {
 
       var $h1 = $doc.getElementsByTagName('h1')[0];
 
-      assert(!$h1.hasAttribute('test-key'));
-      assert(!$h1.hasAttribute('test-hash'));
+      assert(!$h1.hasAttribute('data-key'));
+      assert(!$h1.hasAttribute('data-hash'));
 
       var $span = $doc.getElementsByTagName('span')[0];
 
-      assert(!$span.hasAttribute('test-key'));
-      assert(!$span.hasAttribute('test-hash'));
-    })
+      assert(!$span.hasAttribute('data-key'));
+      assert(!$span.hasAttribute('data-hash'));
+    });
+
+    it.only('support regex in blacklist', function(){
+      webVerse.setBlacklist([/x\-.*/]);
+
+      $doc.body.appendChild($doc.createElement('x-h1'));
+      $doc.body.appendChild($doc.createElement('x-span'));
+
+      webVerse.addIdentifiers($doc);
+
+      var $h1 = $doc.getElementsByTagName('x-h1')[0];
+
+      assert(!$h1.hasAttribute('data-key'));
+      assert(!$h1.hasAttribute('data-hash'));
+
+      var $span = $doc.getElementsByTagName('x-span')[0];
+
+      assert(!$span.hasAttribute('data-key'));
+      assert(!$span.hasAttribute('data-hash'));
+    });
   });
 
   describe('addIdentifiers', function() {
@@ -66,22 +93,22 @@ describe('webverse', function() {
     });
 
     it('should add identifiers', function() {
-      webVerse.setBlacklist([]);
       webVerse.addIdentifiers($doc);
       var $section = $doc.getElementsByTagName('section')[0];
 
       assert($section.getAttribute('data-key'));
       assert($section.getAttribute('data-hash'));
 
-      var $h1 = $doc.getElementsByTagName('h1')[0];
-
-      assert($h1.getAttribute('data-key'));
-      assert($h1.getAttribute('data-hash'));
-
       webVerse.setIdentifier({
         key: 'test-key',
         hash: 'test-hash'
       });
+      webVerse.addIdentifiers($doc);
+
+      var $h1 = $doc.getElementsByTagName('h1')[0];
+
+      assert($h1.getAttribute('test-key'));
+      assert($h1.getAttribute('test-hash'));
     });
   });
 });
