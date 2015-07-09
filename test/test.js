@@ -59,7 +59,7 @@ describe('webverse', function() {
       assert(!$span.hasAttribute('data-hash'));
     });
 
-    it.only('support regex in blacklist', function(){
+    it('support regex in blacklist', function(){
       webVerse.setBlacklist([/x\-.*/]);
 
       $doc.body.appendChild($doc.createElement('x-h1'));

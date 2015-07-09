@@ -223,22 +223,16 @@ exports.setIdentifier = function(identifierOptions) {
 
 var isBlacklisted = function(tagName) {
   if (elementBlacklist.indexOf(tagName) !== -1) {
-    console.log('is blacklisted', true, tagName)
     return true;
   }
 
   for (var i in elementBlacklist) {
     var filter = elementBlacklist[i];
-    if(typeof filter === 'object'){
-      console.log(filter, filter.test(tagName), tagName)
-    }
     if (typeof filter === 'object' && filter.test(tagName)) {
-      console.log('is blacklisted', true, tagName)
       return true;
     }
   }
 
-  console.log('is blacklisted', false, tagName)
   return false;
 };
 
