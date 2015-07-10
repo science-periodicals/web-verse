@@ -137,8 +137,7 @@ var serializeRange = exports.serializeRange = function(range, $scope) {
 };
 
 //key:start-end
-exports.serializeSelection = function() {
-  var selection = window.getSelection();
+exports.serializeSelection = function(selection) {
   var range;
   if (!selection.isCollapsed) {
     range = selection.getRangeAt(0);
