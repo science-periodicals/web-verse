@@ -1,8 +1,8 @@
 // inspired by https://github.com/NYTimes/Emphasis
 
 var sbd = require('sbd'),
-    crypto = require('crypto'),
-    levenshtein = require('fast-levenshtein');
+  crypto = require('crypto'),
+  levenshtein = require('fast-levenshtein');
 
 var elementBlacklist = ['script', 'style', 'noscript'];
 
@@ -241,8 +241,20 @@ exports.addIdentifiers = function($doc) {
 
   Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), function($el) {
     if (!isBlacklisted($el.tagName.toLowerCase())) {
-      $el.setAttribute(identifier['key'], createKey($el));
-      $el.setAttribute(identifier['hash'], createHash($el));
+      if ($el.hasChildNodes()) {
+        var childNodes = $el.childNodes;
+        // only compute key and hash if it has text nodes
+        // otherwise we would have multiple duplicated hash & keys
+        for (var i = 0; i < childNodes.length; i++) {
+          var children = childNodes[i];
+          if (children.nodeType === Node.TEXT_NODE) {
+            $el.setAttribute(identifier['key'], createKey($el));
+            $el.setAttribute(identifier['hash'], createHash($el));
+
+            return;
+          }
+        }
+      }
     }
   });
   return $doc;
