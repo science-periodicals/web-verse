@@ -24,11 +24,36 @@ var createKey = exports.createKey = function($el) {
       .map(function(x) {return x.trim();})
       .filter(function(x) {return x;});
 
-    if (lines.length) {
-      var first = lines[0].match(/\S+/g).slice(0, (len/2));
-      var last = lines[lines.length-1].match(/\S+/g).slice(0, (len/2));
-      var k = first.concat(last);
+    if(lines.length < 2){
+      var textContents = [];
+      (function recursiveWalk(node) {
+        if (node) {
+          node = node.firstChild;
+          while (node != null) {
+            if (node.nodeType == 3) {
+              // Text node, do something, eg:
+              textContents.push(node.textContent);
+            } else if (node.nodeType == 1) {
+              recursiveWalk(node);
+            }
 
+            node = node.nextSibling;
+          }
+        }
+      })($el);
+      txt = textContents.join(' ');
+
+      lines = sbd.sentences(txt)
+        .map(function(x) {return x.trim();})
+        .filter(function(x) {return x;});
+    }
+
+    if (lines.length) {
+      var k = lines[0].match(/\S+/g).slice(0, (len/2));
+      for(var o = 1; o < lines.length; o++){
+        var last = lines[o].match(/\S+/g).slice(0, (len/2));
+        k = k.concat(last);
+      }
       var max = (k.length > len) ? len : k.length;
 
       for (var i=0; i < max; i++) {

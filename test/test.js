@@ -14,23 +14,44 @@ describe('webverse', function() {
   });
 
   describe('createKey', function() {
-    var $doc;
-    before(function(done) {
-      var html = '<html><body><style></style><p>    I am a paragraph with 2 sentences.    I am the second sentence.</p></body></html>';
-      jsdom.env(html, function (err, window) {
-        if (err) throw err;
-        $doc = window.document;
-        done();
+    describe('regular structured dom', function(){
+        var $doc;
+        before(function(done) {
+          var html = '<html><body><style></style><div>    I am a paragraph with 2 sentences.    I am the second sentence.  Here is the third sentence.</div></body></html>';
+          jsdom.env(html, function (err, window) {
+            if (err) throw err;
+            $doc = window.document;
+            done();
+          });
+        });
+
+        it('should compute a key', function() {
+          assert.equal(webVerse.createKey($doc.getElementsByTagName('div')[0]), 'IaaIat');
+        });
+
+        it('should not compute a key', function() {
+          assert(!$doc.getElementsByTagName('style')[0].hasAttribute('data-key'));
+        });
+    });
+    describe('irregular structured dom', function(){
+      var $doc;
+      before(function(done) {
+        var html = '<html><body><style></style><div><p>    I</p> <p>am  </p> <p>a</p> <p>paragraph</p> <p>with</p> <p>2</p> <p>sentences.</p>   <p>I</p> <p>am</p> <p>the</p> <p>second</p> <p>sentence.</p>  <p>Here</p> <p>is</p> <p>the</p> <p>third</p> <p>sentence.</p></div></body></html>';
+        jsdom.env(html, function (err, window) {
+          if (err) throw err;
+          $doc = window.document;
+          done();
+        });
       });
-    });
 
-    it('should compute a key', function() {
-      assert.equal(webVerse.createKey($doc.getElementsByTagName('p')[0]), 'IaaIat');
-    });
+      it('should compute a key', function() {
+        assert.equal(webVerse.createKey($doc.getElementsByTagName('div')[0]), 'IaaIat');
+      });
 
-    it('should not compute a key', function() {
-      assert(!$doc.getElementsByTagName('style')[0].hasAttribute('data-key'));
-    });
+      it('should not compute a key', function() {
+        assert(!$doc.getElementsByTagName('style')[0].hasAttribute('data-key'));
+      });
+    })
   });
 
   describe('setBlacklist', function(){
