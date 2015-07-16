@@ -6,7 +6,9 @@ var assert = require('assert')
 describe('webverse', function() {
 
   beforeEach(function(){
-    webVerse.setBlacklist([]);
+    webVerse.setBlacklist([
+      'style'
+    ]);
     webVerse.setIdentifier({
       key: 'data-key',
       hash: 'data-hash'
@@ -17,7 +19,7 @@ describe('webverse', function() {
     describe('regular structured dom', function(){
         var $doc;
         before(function(done) {
-          var html = '<html><body><style></style><div>    I am a paragraph with 2 sentences.    I am the second sentence.  Here is the third sentence.</div></body></html>';
+          var html = '<html><body><style>first styles block</style><div>    I am a paragraph with 2 sentences.    <style>second style block</style> I am the second sentence.  Here is the third sentence.</div></body></html>';
           jsdom.env(html, function (err, window) {
             if (err) throw err;
             $doc = window.document;

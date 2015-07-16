@@ -17,36 +17,32 @@ var elementBlacklist = ['script', 'style', 'noscript'];
 var createKey = exports.createKey = function($el) {
   var key = '';
   var len = 6;
-  var txt = ($el.textContent || '').replace(/[^a-z\. ]+/gi, '').trim();
+
+  var textContents = [];
+  (function recursiveWalk(node) {
+    if (node) {
+      node = node.firstChild;
+      while (node != null) {
+        if(!isBlacklisted(node.nodeName.toLowerCase())){
+          if (node.nodeType == 3) {
+            // Text node, do something, eg:
+            textContents.push(node.textContent);
+          } else if (node.nodeType == 1) {
+            recursiveWalk(node);
+          }
+        }
+
+        node = node.nextSibling;
+      }
+    }
+  })($el);
+
+  var txt = textContents.join(' ').replace(/[^a-z\. ]+/gi, '').trim();
 
   if (txt && txt.length>1) {
     var lines = sbd.sentences(txt)
       .map(function(x) {return x.trim();})
       .filter(function(x) {return x;});
-
-    if(lines.length < 2){
-      var textContents = [];
-      (function recursiveWalk(node) {
-        if (node) {
-          node = node.firstChild;
-          while (node != null) {
-            if (node.nodeType == 3) {
-              // Text node, do something, eg:
-              textContents.push(node.textContent);
-            } else if (node.nodeType == 1) {
-              recursiveWalk(node);
-            }
-
-            node = node.nextSibling;
-          }
-        }
-      })($el);
-      txt = textContents.join(' ');
-
-      lines = sbd.sentences(txt)
-        .map(function(x) {return x.trim();})
-        .filter(function(x) {return x;});
-    }
 
     if (lines.length) {
       var k = lines[0].match(/\S+/g).slice(0, (len/2));
