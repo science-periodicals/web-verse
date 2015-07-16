@@ -1,17 +1,65 @@
 var assert = require('assert')
   , jsdom = require('jsdom')
-  , crypto = require('crypto')
   , webVerse = require('..');
 
 
 describe('webverse', function() {
 
+  beforeEach(function(){
+    webVerse.setBlacklist([
+      'style'
+    ]);
+    webVerse.setIdentifier({
+      key: 'data-key',
+      hash: 'data-hash'
+    });
+  });
+
   describe('createKey', function() {
+    describe('regular structured dom', function(){
+        var $doc;
+        before(function(done) {
+          var html = '<html><body><style>first styles block</style><div>    I am a paragraph with 2 sentences.    <style>second style block</style> I am the second sentence.  Here is the third sentence.</div></body></html>';
+          jsdom.env(html, function (err, window) {
+            if (err) throw err;
+            $doc = window.document;
+            done();
+          });
+        });
 
+        it('should compute a key', function() {
+          assert.equal(webVerse.createKey($doc.getElementsByTagName('div')[0]), 'IaaIat');
+        });
+
+        it('should not compute a key', function() {
+          assert(!$doc.getElementsByTagName('style')[0].hasAttribute('data-key'));
+        });
+    });
+    describe('irregular structured dom', function(){
+      var $doc;
+      before(function(done) {
+        var html = '<html><body><style></style><div><p>    I</p> <p>am  </p> <p>a</p> <p>paragraph</p> <p>with</p> <p>2</p> <p>sentences.</p>   <p>I</p> <p>am</p> <p>the</p> <p>second</p> <p>sentence.</p>  <p>Here</p> <p>is</p> <p>the</p> <p>third</p> <p>sentence.</p></div></body></html>';
+        jsdom.env(html, function (err, window) {
+          if (err) throw err;
+          $doc = window.document;
+          done();
+        });
+      });
+
+      it('should compute a key', function() {
+        assert.equal(webVerse.createKey($doc.getElementsByTagName('div')[0]), 'IaaIat');
+      });
+
+      it('should not compute a key', function() {
+        assert(!$doc.getElementsByTagName('style')[0].hasAttribute('data-key'));
+      });
+    })
+  });
+
+  describe('setBlacklist', function(){
     var $doc;
-
     before(function(done) {
-      var html = '<html><body><p>    I am a paragraph with 2 sentences.    I am the second sentence.</p></body></html>';
+      var html = '<html><body><h1></h1><span></span></body></html>';
       jsdom.env(html, function (err, window) {
         if (err) throw err;
         $doc = window.document;
@@ -19,10 +67,39 @@ describe('webverse', function() {
       });
     });
 
-    it('should compute a key', function() {
-      assert.equal(webVerse.createKey($doc.getElementsByTagName('p')[0]), 'IaaIat');
+    it('should allow to set blacklist', function(){
+      webVerse.setBlacklist(['H1', 'span']);
+      webVerse.addIdentifiers($doc);
+
+      var $h1 = $doc.getElementsByTagName('h1')[0];
+
+      assert(!$h1.hasAttribute('data-key'));
+      assert(!$h1.hasAttribute('data-hash'));
+
+      var $span = $doc.getElementsByTagName('span')[0];
+
+      assert(!$span.hasAttribute('data-key'));
+      assert(!$span.hasAttribute('data-hash'));
     });
 
+    it('support regex in blacklist', function(){
+      webVerse.setBlacklist([/x\-.*/]);
+
+      $doc.body.appendChild($doc.createElement('x-h1'));
+      $doc.body.appendChild($doc.createElement('x-span'));
+
+      webVerse.addIdentifiers($doc);
+
+      var $h1 = $doc.getElementsByTagName('x-h1')[0];
+
+      assert(!$h1.hasAttribute('data-key'));
+      assert(!$h1.hasAttribute('data-hash'));
+
+      var $span = $doc.getElementsByTagName('x-span')[0];
+
+      assert(!$span.hasAttribute('data-key'));
+      assert(!$span.hasAttribute('data-hash'));
+    });
   });
 
   describe('addIdentifiers', function() {
@@ -39,19 +116,22 @@ describe('webverse', function() {
     });
 
     it('should add identifiers', function() {
-      var $citeable = webVerse.addIdentifiers($doc);
+      webVerse.addIdentifiers($doc);
+      var $section = $doc.getElementsByTagName('section')[0];
 
-      var $h1 = $citeable.getElementsByTagName('h1')[0];
-      assert($h1.getAttribute('data-id'));
-      assert.equal($h1.getAttribute('data-hash'), crypto.createHash('sha1').update('Hello', 'utf8').digest('hex'));
-      assert.equal($h1.getAttribute('data-key'), 'HH');
+      assert($section.getAttribute('data-key'));
+      assert($section.getAttribute('data-hash'));
 
-      var $section = $citeable.getElementsByTagName('section')[0];
-      assert($section.getAttribute('data-id'));
-      assert.equal($section.getAttribute('data-hash'), crypto.createHash('sha1').update('world', 'utf8').digest('hex'));
-      assert(!$section.getAttribute('data-key'));
+      webVerse.setIdentifier({
+        key: 'test-key',
+        hash: 'test-hash'
+      });
+      webVerse.addIdentifiers($doc);
+
+      var $h1 = $doc.getElementsByTagName('h1')[0];
+
+      assert($h1.getAttribute('test-key'));
+      assert($h1.getAttribute('test-hash'));
     });
-
   });
-
 });

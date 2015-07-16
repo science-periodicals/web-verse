@@ -1,11 +1,10 @@
 // inspired by https://github.com/NYTimes/Emphasis
 
-var crypto = require('crypto')
-  , sbd = require('sbd')
-  , uuid = require('uuid')
-  , levenshtein = require('fast-levenshtein');
+var sbd = require('sbd'),
+    crypto = require('crypto'),
+    levenshtein = require('fast-levenshtein');
 
-var citeable = exports.citeable = ['P', 'LI', 'DD', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'FIGCAPTION', 'CAPTION', 'ASIDE'];
+var elementBlacklist = ['script', 'style', 'noscript'];
 
 /**
  * From a block element, generate a Key
@@ -18,18 +17,39 @@ var citeable = exports.citeable = ['P', 'LI', 'DD', 'H1', 'H2', 'H3', 'H4', 'H5'
 var createKey = exports.createKey = function($el) {
   var key = '';
   var len = 6;
-  var txt = ($el.textContent || '').replace(/[^a-z\. ]+/gi, '').trim();
+
+  var textContents = [];
+  (function recursiveWalk(node) {
+    if (node) {
+      node = node.firstChild;
+      while (node != null) {
+        if(!isBlacklisted(node.nodeName.toLowerCase())){
+          if (node.nodeType == 3) {
+            // Text node, do something, eg:
+            textContents.push(node.textContent);
+          } else if (node.nodeType == 1) {
+            recursiveWalk(node);
+          }
+        }
+
+        node = node.nextSibling;
+      }
+    }
+  })($el);
+
+  var txt = textContents.join(' ').replace(/[^a-z\. ]+/gi, '').trim();
 
   if (txt && txt.length>1) {
     var lines = sbd.sentences(txt)
-          .map(function(x) {return x.trim();})
-          .filter(function(x) {return x;});
+      .map(function(x) {return x.trim();})
+      .filter(function(x) {return x;});
 
     if (lines.length) {
-      var first = lines[0].match(/\S+/g).slice(0, (len/2));
-      var last = lines[lines.length-1].match(/\S+/g).slice(0, (len/2));
-      var k = first.concat(last);
-
+      var k = lines[0].match(/\S+/g).slice(0, (len/2));
+      for(var o = 1; o < lines.length; o++){
+        var last = lines[o].match(/\S+/g).slice(0, (len/2));
+        k = k.concat(last);
+      }
       var max = (k.length > len) ? len : k.length;
 
       for (var i=0; i < max; i++) {
@@ -51,13 +71,12 @@ var getScope = exports.getScope = function(range) {
   var $scope = range.commonAncestorContainer;
   if ($scope.nodeType === Node.TEXT_NODE) {
     $scope = $scope.parentElement; //get closest Element
-  };
+  }
 
-  // TODO generalize to list of supported block elements
   // get closest citeable element
-  while (!~citeable.indexOf($scope.tagName)) {
+  while (isBlacklisted($scope.tagName.toLowerCase())) {
     $scope = $scope.parentElement;
-    if ($scope.tagName === 'HTML') {
+    if ($scope.tagName.toLowerCase() === 'html') {
       return;
     }
   }
@@ -123,7 +142,7 @@ var getOffsets = exports.getOffsets = function(range, $scope) {
 
 
 var serializeRange = exports.serializeRange = function(range, $scope) {
-  var $scope = $scope || getScope(range);
+  $scope = $scope || getScope(range);
   if (!$scope) return;
 
   var offsets = getOffsets(range, $scope);
@@ -139,8 +158,7 @@ var serializeRange = exports.serializeRange = function(range, $scope) {
 };
 
 //key:start-end
-exports.serializeSelection = function() {
-  var selection = window.getSelection();
+exports.serializeSelection = function(selection) {
   var range;
   if (!selection.isCollapsed) {
     range = selection.getRangeAt(0);
@@ -200,13 +218,52 @@ exports.findKey = function(target, candidates) {
   return x;
 };
 
+var identifier = {
+  'key': 'data-key',
+  'hash': 'data-hash'
+};
+
+exports.setBlacklist = function(blacklist) {
+  for (var i = 0; i < blacklist.length; i++) {
+    if (typeof blacklist[i] === 'string') {
+      blacklist[i] = blacklist[i].toLowerCase();
+    }
+  }
+
+  elementBlacklist = blacklist;
+};
+
+exports.setIdentifier = function(identifierOptions) {
+  for (var i in identifier) {
+    if (typeof identifierOptions[i] === 'string') {
+      identifier[i] = identifierOptions[i];
+    }
+  }
+};
+
+var isBlacklisted = function(tagName) {
+  if (elementBlacklist.indexOf(tagName) !== -1) {
+    return true;
+  }
+
+  for (var i in elementBlacklist) {
+    var filter = elementBlacklist[i];
+    if (typeof filter === 'object' && filter.test(tagName)) {
+      return true;
+    }
+  }
+
+  return false;
+};
 
 exports.addIdentifiers = function($doc) {
+  $doc.body.setAttribute(identifier['key'], createKey($doc.body));
+  $doc.body.setAttribute(identifier['hash'], createHash($doc.body));
+
   Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), function($el) {
-    $el.setAttribute('data-id', uuid.v1());
-    $el.setAttribute('data-hash', createHash($el));
-    if (~citeable.indexOf($el.tagName)) {
-      $el.setAttribute('data-key', createKey($el));
+    if (!isBlacklisted($el.tagName.toLowerCase())) {
+      $el.setAttribute(identifier['key'], createKey($el));
+      $el.setAttribute(identifier['hash'], createHash($el));
     }
   });
   return $doc;
