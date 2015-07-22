@@ -53,7 +53,6 @@ var getScope = exports.getScope = function(range) {
     $scope = $scope.parentElement; //get closest Element
   };
 
-  // TODO generalize to list of supported block elements
   // get closest citeable element
   while (!~citeable.indexOf($scope.tagName)) {
     $scope = $scope.parentElement;
@@ -247,7 +246,8 @@ exports.getChildOffsets = function($parent, $child) {
   return { startOffset: startOffset, endOffset: endOffset };
 };
 
-exports.getSerializationsFromText = function($scope, text) {
+
+exports.getRangeFromText = function($scope, text) {
   text = text.trim();
   var re = new RegExp(text, 'ig');
   var textNode;
@@ -264,6 +264,6 @@ exports.getSerializationsFromText = function($scope, text) {
   }
 
   return matchIndexes.map(function(index) {
-    return serializeRange(rangeFromOffsets($scope, index, index + text.length), $scope);
+    return rangeFromOffsets($scope, index, index + text.length);
   });
 };
