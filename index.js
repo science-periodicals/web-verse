@@ -246,8 +246,7 @@ exports.getChildOffsets = function($parent, $child) {
   return { startOffset: startOffset, endOffset: endOffset };
 };
 
-
-exports.getRangeFromText = function($scope, text) {
+exports.getRangesFromText = function($scope, text) {
   text = text.trim();
   var re = new RegExp(text, 'ig');
   var textNode;
