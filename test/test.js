@@ -39,6 +39,10 @@ describe('webverse', function() {
     });
 
     it('should add identifiers', function() {
+      webVerse.setBlacklist([
+        'section'
+      ]);
+
       var $citeable = webVerse.addIdentifiers($doc);
 
       var $h1 = $citeable.getElementsByTagName('h1')[0];
