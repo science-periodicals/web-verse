@@ -5,7 +5,7 @@ var crypto = require('crypto')
   , uuid = require('uuid')
   , levenshtein = require('fast-levenshtein');
 
-var citeable = exports.citeable = ['P', 'LI', 'DD', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'FIGCAPTION', 'CAPTION', 'ASIDE'];
+var elementBlacklist = ['script', 'style', 'noscript'];
 
 /**
  * From a block element, generate a Key
@@ -51,10 +51,10 @@ var getScope = exports.getScope = function(range) {
   var $scope = range.commonAncestorContainer;
   if ($scope.nodeType === Node.TEXT_NODE) {
     $scope = $scope.parentElement; //get closest Element
-  };
+  }
 
   // get closest citeable element
-  while (!~citeable.indexOf($scope.tagName)) {
+  while (isBlacklisted($scope.tagName.toLowerCase())) {
     $scope = $scope.parentElement;
     if ($scope.tagName === 'HTML') {
       return;
@@ -137,6 +137,31 @@ var serializeRange = exports.serializeRange = function(range, $scope) {
   };
 };
 
+var isBlacklisted = function(tagName) {
+  if (elementBlacklist.indexOf(tagName) !== -1) {
+    return true;
+  }
+
+  for (var i in elementBlacklist) {
+    var filter = elementBlacklist[i];
+    if (typeof filter === 'object' && filter.test(tagName)) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+exports.setBlacklist = function(blacklist) {
+  for (var i = 0; i < blacklist.length; i++) {
+    if (typeof blacklist[i] === 'string') {
+      blacklist[i] = blacklist[i].toLowerCase();
+    }
+  }
+
+  elementBlacklist = blacklist;
+};
+
 //key:start-end
 exports.serializeSelection = function() {
   var selection = window.getSelection();
@@ -204,7 +229,7 @@ exports.addIdentifiers = function($doc) {
   Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), function($el) {
     $el.setAttribute('data-id', uuid.v1());
     $el.setAttribute('data-hash', createHash($el));
-    if (~citeable.indexOf($el.tagName)) {
+    if (!isBlacklisted($el.tagName.toLowerCase())) {
       $el.setAttribute('data-key', createKey($el));
     }
   });
