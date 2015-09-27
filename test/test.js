@@ -29,7 +29,7 @@ describe('webverse', function() {
     var $doc;
 
     before(function(done) {
-      var html = '<html><body><h1>Hello</h1><section><p>world</p></section></body></html>';
+      var html = '<html><body><h1>Hello</h1><section><p>world</p></section><custom-tag>another world</custom-tag></body></html>';
       jsdom.env(html, function (err, window) {
         if (err) throw err;
 
@@ -40,7 +40,8 @@ describe('webverse', function() {
 
     it('should add identifiers', function() {
       webVerse.setBlacklist([
-        'section'
+        'section',
+        /custom-*/
       ]);
 
       var $citeable = webVerse.addIdentifiers($doc);
@@ -54,6 +55,11 @@ describe('webverse', function() {
       assert($section.getAttribute('data-id'));
       assert.equal($section.getAttribute('data-hash'), crypto.createHash('sha1').update('world', 'utf8').digest('hex'));
       assert(!$section.getAttribute('data-key'));
+
+      var $customTag = $citeable.getElementsByTagName('custom-tag')[0];
+      assert($customTag.getAttribute('data-id'));
+      assert.equal($customTag.getAttribute('data-hash'), crypto.createHash('sha1').update('another world', 'utf8').digest('hex'));
+      assert(!$customTag.getAttribute('data-key'))
     });
 
   });
