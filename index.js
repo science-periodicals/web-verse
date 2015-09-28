@@ -63,6 +63,8 @@ var getScope = exports.getScope = function(range) {
   return $scope;
 };
 
+// XXX
+//  this needs to ignore math (anything MathJAX-generated) in the same way it ignores whitespace
 var getOffsets = exports.getOffsets = function(range, $scope) {
 
   var startTextNode, endTextNode;
@@ -150,6 +152,8 @@ exports.serializeSelection = function() {
   return serializeRange(range);
 };
 
+// XXX
+//  needs to ignore whitespace and MathJAX-generated stuff
 var rangeFromOffsets = exports.rangeFromOffsets = function($scope, startOffset, endOffset) {
   var node;
   var it = document.createNodeIterator($scope, NodeFilter.SHOW_TEXT);
@@ -246,6 +250,12 @@ exports.getChildOffsets = function($parent, $child) {
   return { startOffset: startOffset, endOffset: endOffset };
 };
 
+// XXX
+//  this method is all kinds of wrong
+//  the text is used as regular expression without sanitising
+//  need to check that createNodeIterator() normalises text
+//  phantom for testing
+//  it also does not ignore whitespace and math
 exports.getRangesFromText = function($scope, text) {
   text = text.trim();
   var re = new RegExp(text, 'ig');
