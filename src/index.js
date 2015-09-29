@@ -3,7 +3,7 @@
 
 import Sha1 from 'sha.js/sha1';
 import sbd from 'sbd';
-import uuid from 'uuid';
+import shortid from 'shortid';
 import levenshtein from 'fast-levenshtein';
 import escapeRegex from 'escape-regex-string';
 
@@ -131,7 +131,7 @@ export function serializeRange (range, $scope) {
   };
 }
 
-//key:start-end
+// serialise the selection as a range
 export function serializeSelection () {
   let selection = window.getSelection();
   if (!selection.isCollapsed) return serializeRange(selection.getRangeAt(0));
@@ -169,16 +169,21 @@ export function rangeFromOffsets ($scope, startOffset, endOffset) {
   return range;
 };
 
-exports.findKey = function (target, candidates) {
-  var x = {index: undefined, value: undefined, lev: undefined};
+// given a target key and a list of candidates, find either an exact match, or one with the smallest
+// Levenshtein edit distance. If no candidate has an edit distance less than three, the match is
+// undefined.
+export function findKey (target, candidates) {
+  let x = { index: undefined, value: undefined, lev: undefined };
 
-  for (var i=0; i < candidates.length; i++) {
+  for (let i = 0; i < candidates.length; i++) {
     if (target === candidates[i]) {
-      return {index: i, value: candidates[i], lev: 0};
-    } else { //look for 1st closest Match
-      var ls = levenshtein.get(target.slice(0, 3), candidates[i].slice(0, 3));
-      var le = levenshtein.get(target.slice(-3), candidates[i].slice(-3));
-      var lev = ls+le;
+      return { index: i, value: candidates[i], lev: 0 };
+    }
+    // look for 1st closest Match
+    else {
+      let ls = levenshtein.get(target.slice(0, 3), candidates[i].slice(0, 3));
+      let le = levenshtein.get(target.slice(-3), candidates[i].slice(-3));
+      let lev = ls + le;
       if (lev < 3 && ((x.lev === undefined) || (lev < x.lev)) ) {
         x.index = i;
         x.value = candidates[i];
@@ -190,12 +195,13 @@ exports.findKey = function (target, candidates) {
   return x;
 };
 
-
-exports.addIdentifiers = function ($doc) {
-  Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), function($el) {
-    $el.setAttribute('data-id', uuid.v1());
-    $el.setAttribute('data-hash', createHash($el));
+// Given a document object, add data-id, data-hash, and data-key to all citeables.
+// Only call this if you have control over the document's lifecycle.
+export function addIdentifiers ($doc) {
+  Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), $el => {
     if (~citeable.indexOf($el.tagName)) {
+      $el.setAttribute('data-id', shortid.generate());
+      $el.setAttribute('data-hash', createHash($el));
       $el.setAttribute('data-key', createKey($el));
     }
   });
