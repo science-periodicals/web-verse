@@ -4,7 +4,7 @@ module.exports = function (config) {
     // base path that will be used to resolve all patterns (eg. files, exclude)
     basePath: '',
     // frameworks to use, from: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['mocha', 'chai'],
     // list of files / patterns to load in the browser
     files: [
       'web-verse.min.js',

@@ -24,25 +24,25 @@ module.exports = function (config) {
       base:         'SauceLabs',
       browserName:  'chrome',
       platform:     'Windows 7',
-      version:      '47'
+      version:      '45'
     },
     'sl_chrome-1': {
       base:         'SauceLabs',
       browserName:  'chrome',
       platform:     'OS X 10.9',
-      version:      '46'
+      version:      '44'
     },
     'sl_chrome-2': {
       base:         'SauceLabs',
       browserName:  'chrome',
       platform:     'Linux',
-      version:      '45'
+      version:      '43'
     },
 
     // IE, back to IE9
     'sl_ie-latest': {
       base:         'SauceLabs',
-      browserName:  'internet explorer',
+      browserName:  'edge',
       platform:     'Windows 10',
       version:      '20'
     },
