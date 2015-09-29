@@ -3,7 +3,7 @@ describe('WebVerse Basics', function () {
   describe('createKey', function () {
     it('should compute a key', function () {
       htmlContent('<p>    I am a paragraph with 2 sentences.    I am the second sentence.</p>');
-      assert.equal(WebVerse.createKey(document.getElementsByTagName('p')[0]), 'IaaIat');
+      assert.equal(WebVerse.createKey(document.getElementsByTagName('p')[0]), 'IaaIat', 'Creating a key');
     });
   });
 
@@ -19,14 +19,9 @@ describe('WebVerse Basics', function () {
       var $citeable = WebVerse.addIdentifiers(document);
 
       var $h1 = $citeable.getElementsByTagName('h1')[0];
-      assert($h1.getAttribute('data-id'));
-      assert.equal($h1.getAttribute('data-hash'), hashedHello);
-      assert.equal($h1.getAttribute('data-key'), 'HH');
-
-      var $section = $citeable.getElementsByTagName('section')[0];
-      assert($section.getAttribute('data-id'));
-      assert.equal($section.getAttribute('data-hash'), hashedWorld);
-      assert(!$section.getAttribute('data-key'));
+      assert($h1.getAttribute('data-id'), 'Has attribute data-id');
+      assert.equal($h1.getAttribute('data-hash'), hashedHello, 'Has the correct hash in data-hash');
+      assert.equal($h1.getAttribute('data-key'), 'HH', 'Has the correct key in data-key');
     });
   });
 });
