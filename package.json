@@ -4,9 +4,9 @@
   "description": "dynamic paragraph-specific anchor links",
   "main": "index.js",
   "scripts": {
-    "build": "node_modules/.bin/browserify index.js | node_modules/.bin/uglifyjs -mc > web-verse.min.js",
-    "watch": "node_modules/.bin/watchify -r ./index.js:web-verse -o bundle.js -dv",
-    "test": "./node_modules/.bin/mocha"
+    "build": "browserify index.js | uglifyjs -mc > web-verse.min.js",
+    "watch": "watchify -r ./index.js:web-verse -o bundle.js -dv",
+    "test": "./mocha"
   },
   "repository": {
     "type": "git",
