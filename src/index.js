@@ -10,7 +10,7 @@ import escapeRegex from 'escape-regex-string';
 const TEXT_NODE = 3;
 const SHOW_TEXT = 4;
 export let citeable = ['P', 'LI', 'DD', 'DT', 'BLOCKQUOTE', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
-                       'FIGCAPTION', 'CAPTION', 'ASIDE']
+                       'FIGCAPTION', 'CAPTION', 'ASIDE', 'SECTION', 'ARTICLE', 'BODY', 'DIV', 'MAIN']
 ;
 
 /**
