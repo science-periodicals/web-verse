@@ -2,18 +2,17 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <script src="bundle.js"></script>
+    <script src="web-verse.min.js"></script>
     <script>
-      var verse = require('web-verse');
       document.addEventListener('DOMContentLoaded', function(e){
-        var $els = document.querySelectorAll(verse.citeable.join(', '));
-        console.log('keys: ' + Array.prototype.map.call($els, function($el) {return verse.createKey($el);}).join(', '));
+        var $els = document.querySelectorAll(WebVerse.citeable.join(', '));
+        console.log('keys: ' + Array.prototype.map.call($els, function($el) {return WebVerse.createKey($el);}).join(', '));
 
         document.addEventListener('mouseup', function(e){
-          var sel = verse.serializeSelection();
+          var sel = WebVerse.serializeSelection();
           if (!sel) return;
           console.log(sel.key + ':' + sel.startOffset + '-' + sel.endOffset + ' -> ' + sel.text);
-          var range = verse.rangeFromOffsets(sel.$scope, sel.startOffset, sel.endOffset);
+          var range = WebVerse.rangeFromOffsets(sel.$scope, sel.startOffset, sel.endOffset);
 
           var rsel = window.getSelection();
           rsel.removeAllRanges();
