@@ -8,6 +8,7 @@ import levenshtein from 'fast-levenshtein';
 import escapeRegex from 'escape-regex-string';
 
 const TEXT_NODE = 3;
+const SHOW_TEXT = 4;
 export let citeable = ['P', 'LI', 'DD', 'DT', 'BLOCKQUOTE', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
                        'FIGCAPTION', 'CAPTION', 'ASIDE']
 ;
@@ -41,14 +42,14 @@ export function createKey ($el) {
   }
 
   return key;
-};
+}
 
 // create a sha1 hash for the trimmed content of the given element
 export function createHash ($el) {
   let sha1 = new Sha1();
   // TODO: textContent.replace(/\s+/g, ' ') ??
   return sha1.update($el.textContent.trim(), 'utf8').digest('hex');
-};
+}
 
 // given a range, find the enclosing block element that is part of our whitelist
 export function getScope (range) {
@@ -65,7 +66,7 @@ export function getScope (range) {
     }
   }
   return $scope;
-};
+}
 
 // Given a range and an element scope, return the start and end offsets into the text that ignore
 // white space.
@@ -81,7 +82,7 @@ export function getOffsets (range, $scope) {
   ;
 
   let node, indStartTextNode, indEndTextNode, ind = 0, textNodes = []
-  ,   it = document.createNodeIterator($scope, NodeFilter.SHOW_TEXT);
+  ,   it = document.createNodeIterator($scope, SHOW_TEXT);
   while (node = it.nextNode()) {
     textNodes.push(node);
     if (node === startTextNode) {
@@ -111,7 +112,7 @@ export function getOffsets (range, $scope) {
   ;
 
   return { startOffset: startOffset, endOffset: endOffset };
-};
+}
 
 // given a range and a scope, returns a data structure with all the details needed to reconstruct it
 export function serializeRange (range, $scope) {
@@ -128,7 +129,7 @@ export function serializeRange (range, $scope) {
     endOffset: offsets.endOffset,
     text: range.toString().trim()
   };
-};
+}
 
 //key:start-end
 export function serializeSelection () {
@@ -136,24 +137,26 @@ export function serializeSelection () {
   if (!selection.isCollapsed) return serializeRange(selection.getRangeAt(0));
 }
 
-// XXX
-//  needs to ignore whitespace and MathJAX-generated stuff
-var rangeFromOffsets = exports.rangeFromOffsets = function ($scope, startOffset, endOffset) {
-  var node;
-  var it = document.createNodeIterator($scope, NodeFilter.SHOW_TEXT);
-  var acc = 0;
-  var startNode, endNode, relStartOffset, relEndOffset;
-  var textContent;
+// given a scope and start/end offsets that ignore white space, returns a range that takes the
+// white space into account and captures that content
+export function rangeFromOffsets ($scope, startOffset, endOffset) {
+  let node
+  ,   it = document.createNodeIterator($scope, SHOW_TEXT)
+  ,   acc = 0
+  ,   startNode, endNode, relStartOffset, relEndOffset
+  ;
 
   while (node = it.nextNode()) {
-    textContent = node.textContent.trim();
+    let textContent = node.textContent.trim();
     if (relStartOffset === undefined && ((acc + textContent.length) >= startOffset)) {
       startNode = node;
-      relStartOffset = startOffset - acc + (startNode.textContent.length - startNode.textContent.replace(/^\s+/, '').length); //we add back the effect of having trimmed the textContent;
+      // we add back the effect of having trimmed the textContent
+      relStartOffset = Math.max(0, startOffset - acc + (startNode.textContent.length - startNode.textContent.replace(/^\s+/, '').length));
     }
     if (relEndOffset === undefined && ((acc + textContent.length) >= endOffset)) {
       endNode = node;
-      relEndOffset = endOffset-acc + (endNode.textContent.length - endNode.textContent.replace(/^\s+/, '').length); //we add back the effect of having trimmed the textContent;
+      // ditto
+      relEndOffset = Math.max(0, endOffset - acc + (endNode.textContent.length - endNode.textContent.replace(/^\s+/, '').length));
       break;
     }
     acc += textContent.length;
@@ -213,7 +216,7 @@ exports.getChildOffsets = function ($parent, $child) {
   }
 
   var node, indStartTextNode, ind = 0, textNodes = [];
-  var it = document.createNodeIterator($parent, NodeFilter.SHOW_TEXT);
+  var it = document.createNodeIterator($parent, SHOW_TEXT);
   while (node = it.nextNode()) {
     textNodes.push(node);
     if (node === startTextNode) {
@@ -245,7 +248,7 @@ exports.getRangesFromText = function ($scope, text) {
   var re = new RegExp(escapeRegex(text), 'gi');
   var textNode;
   var textContent = '';
-  var it = document.createNodeIterator($scope, NodeFilter.SHOW_TEXT);
+  var it = document.createNodeIterator($scope, SHOW_TEXT);
   while (textNode = it.nextNode()) {
     textContent += textNode.textContent.trim();
   }
