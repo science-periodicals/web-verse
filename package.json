@@ -24,15 +24,15 @@
   },
   "homepage": "https://github.com/standard-analytics/web-verse",
   "dependencies": {
-    "fast-levenshtein": "1.0.6",
-    "sbd": "0.0.5",
-    "uuid": "^2.0.1"
+    "fast-levenshtein": "1.0.7",
+    "sbd": "1.0.1",
+    "uuid": "2.0.1"
   },
   "devDependencies": {
-    "browserify": "^8.1.0",
-    "jsdom": "^5.4.1",
-    "mocha": "^2.2.5",
-    "uglify-js": "^2.4.16",
-    "watchify": "^2.2.1"
+    "browserify": "11.2.0",
+    "jsdom": "6.5.1",
+    "mocha": "2.3.3",
+    "uglify-js": "^2.4.24",
+    "watchify": "^3.0.4"
   }
 }
