@@ -22,6 +22,11 @@ describe('WebVerse Basics', function () {
       assert($h1.getAttribute('data-id'), 'Has attribute data-id');
       assert.equal($h1.getAttribute('data-hash'), hashedHello, 'Has the correct hash in data-hash');
       assert.equal($h1.getAttribute('data-key'), 'HH', 'Has the correct key in data-key');
+
+      var $section = $citeable.getElementsByTagName('section')[0];
+      assert($section.getAttribute('data-id'), 'Has data-id on section');
+      assert.equal($section.getAttribute('data-hash'), hashedWorld, 'Has data-hash on section');
+      assert($section.getAttribute('data-key'), 'Has data-key on section');
     });
   });
 });
