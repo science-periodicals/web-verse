@@ -20,7 +20,7 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
-    autoWatchBatchDelay:  10000,
+    autoWatchBatchDelay:  1000,
     // Start these browsers, currently available:
     // - Chrome
     // - ChromeCanary

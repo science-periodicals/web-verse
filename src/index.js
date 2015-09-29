@@ -1,9 +1,13 @@
+
 // inspired by https://github.com/NYTimes/Emphasis
 
-var crypto = require('crypto')
+var Sha1 = require('sha.js/sha1')
   , sbd = require('sbd')
   , uuid = require('uuid')
-  , levenshtein = require('fast-levenshtein');
+  , levenshtein = require('fast-levenshtein')
+;
+
+const TEXT_NODE = 3;
 
 var citeable = exports.citeable = ['P', 'LI', 'DD', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'FIGCAPTION', 'CAPTION', 'ASIDE'];
 
@@ -15,7 +19,7 @@ var citeable = exports.citeable = ['P', 'LI', 'DD', 'H1', 'H2', 'H3', 'H4', 'H5'
  * - First character from the first three words of each sentence
  * - Each 6 char key refers to specific block element
  */
-var createKey = exports.createKey = function($el) {
+var createKey = exports.createKey = function ($el) {
   var key = '';
   var len = 6;
   var txt = ($el.textContent || '').replace(/[^a-z\. ]+/gi, '').trim();
@@ -41,15 +45,16 @@ var createKey = exports.createKey = function($el) {
   return key;
 };
 
-var createHash = exports.createHash = function($el, algorithm) {
-  algorithm = algorithm || 'sha1';
-  return crypto.createHash(algorithm).update($el.textContent.trim(), 'utf8').digest('hex'); //TODO textContent.replace(/\s+/g, ' ') ??
+export function createHash ($el) {
+  let sha1 = new Sha1();
+  // TODO: textContent.replace(/\s+/g, ' ') ??
+  return sha1.update($el.textContent.trim(), 'utf8').digest('hex');
 };
 
 
 var getScope = exports.getScope = function(range) {
   var $scope = range.commonAncestorContainer;
-  if ($scope.nodeType === Node.TEXT_NODE) {
+  if ($scope.nodeType === TEXT_NODE) {
     $scope = $scope.parentElement; //get closest Element
   };
 
@@ -63,35 +68,21 @@ var getScope = exports.getScope = function(range) {
   return $scope;
 };
 
-// XXX
-//  this needs to ignore math (anything MathJAX-generated) in the same way it ignores whitespace
-var getOffsets = exports.getOffsets = function(range, $scope) {
-
-  var startTextNode, endTextNode;
-  if (range.startContainer.nodeType === Node.TEXT_NODE) {
-    startTextNode = range.startContainer;
-  } else {
-    for (var i=0; i < range.startContainer.childNodes.length; i++) {
-      if (range.startContainer.childNodes[i].nodeType === Node.TEXT_NODE) {
-        startTextNode = range.startContainer.childNodes[i];
-        break;
-      }
+// Given a range and an element scope, return the start and end offsets into the text that ignore
+// white space.
+export function getOffsets (range, $scope) {
+  let textNodeFromRange = (container) => {
+      if (container.nodeType === TEXT_NODE) return container;
+      for (let i = 0; i < container.childNodes.length; i++) {
+        if (container.childNodes[i].nodeType === TEXT_NODE) return container.childNodes[i];
     }
   }
+  , startTextNode = textNodeFromRange(range.startContainer)
+  , endTextNode = textNodeFromRange(range.endContainer)
+  ;
 
-  if (range.endContainer.nodeType === Node.TEXT_NODE) {
-    endTextNode = range.endContainer;
-  } else {
-    for (var j=0; j < range.endContainer.childNodes.length; j++) {
-      if (range.endContainer.childNodes[j].nodeType === Node.TEXT_NODE) {
-        endTextNode = range.endContainer.childNodes[j];
-        break;
-      }
-    }
-  }
-
-  var node, indStartTextNode, indEndTextNode, ind=0, textNodes = [];
-  var it = document.createNodeIterator($scope, NodeFilter.SHOW_TEXT);
+  let node, indStartTextNode, indEndTextNode, ind = 0, textNodes = []
+  ,   it = document.createNodeIterator($scope, NodeFilter.SHOW_TEXT);
   while (node = it.nextNode()) {
     textNodes.push(node);
     if (node === startTextNode) {
@@ -104,26 +95,27 @@ var getOffsets = exports.getOffsets = function(range, $scope) {
     ind++;
   }
 
-  var startOffset = textNodes.slice(0, indStartTextNode).reduce(function(a, b){
-    return a + b.textContent.trim().length;
-  }, 0);
+  // get the offset without taking white space into account
+  let trimmedOffset = (nodes, index, rangeOffset, anchorNode) => {
+      let baseOffset = nodes.slice(0, index).reduce(function (a, b) {
+        return a + b.textContent.trim().length;
+      }, 0);
+      // we subtract the effect of having trimmed the textContent
+      if (rangeOffset !== undefined) {
+        baseOffset += rangeOffset - (anchorNode.textContent.length -
+                                     anchorNode.textContent.replace(/^\s+/, '').length);
+      }
+      return Math.max(0, baseOffset);
+    }
+  , startOffset = trimmedOffset(textNodes, indStartTextNode, range.startOffset, startTextNode)
+  , endOffset = trimmedOffset(textNodes, indEndTextNode, range.endOffset, endTextNode)
+  ;
 
-  if (range.startOffset !== undefined) {
-    startOffset += range.startOffset - (startTextNode.textContent.length - startTextNode.textContent.replace(/^\s+/, '').length); //we substract the effect of having trimmed the textContent
-  }
-
-  var endOffset = textNodes.slice(0, indEndTextNode).reduce(function(a, b){
-    return a + b.textContent.trim().length;
-  }, 0);
-  if (range.endOffset !== undefined) {
-    endOffset += range.endOffset - (endTextNode.textContent.length - endTextNode.textContent.replace(/^\s+/, '').length); //we substract the effect of having trimmed the textContent;
-  }
-
-  return {startOffset: startOffset, endOffset: endOffset};
+  return { startOffset: startOffset, endOffset: endOffset };
 };
 
 
-var serializeRange = exports.serializeRange = function(range, $scope) {
+var serializeRange = exports.serializeRange = function (range, $scope) {
   var $scope = $scope || getScope(range);
   if (!$scope) return;
 
@@ -140,7 +132,7 @@ var serializeRange = exports.serializeRange = function(range, $scope) {
 };
 
 //key:start-end
-exports.serializeSelection = function() {
+exports.serializeSelection = function () {
   var selection = window.getSelection();
   var range;
   if (!selection.isCollapsed) {
@@ -154,7 +146,7 @@ exports.serializeSelection = function() {
 
 // XXX
 //  needs to ignore whitespace and MathJAX-generated stuff
-var rangeFromOffsets = exports.rangeFromOffsets = function($scope, startOffset, endOffset) {
+var rangeFromOffsets = exports.rangeFromOffsets = function ($scope, startOffset, endOffset) {
   var node;
   var it = document.createNodeIterator($scope, NodeFilter.SHOW_TEXT);
   var acc = 0;
@@ -182,7 +174,7 @@ var rangeFromOffsets = exports.rangeFromOffsets = function($scope, startOffset, 
   return range;
 };
 
-exports.findKey = function(target, candidates) {
+exports.findKey = function (target, candidates) {
   var x = {index: undefined, value: undefined, lev: undefined};
 
   for (var i=0; i < candidates.length; i++) {
@@ -217,11 +209,11 @@ exports.addIdentifiers = function ($doc) {
 
 exports.getChildOffsets = function ($parent, $child) {
   var startTextNode;
-  if ($child.nodeType === Node.TEXT_NODE) {
+  if ($child.nodeType === TEXT_NODE) {
     startTextNode = $child;
   } else {
     for (var i = 0; i < $child.childNodes.length; i++) {
-      if ($child.childNodes[i].nodeType === Node.TEXT_NODE) {
+      if ($child.childNodes[i].nodeType === TEXT_NODE) {
         startTextNode = $child.childNodes[i];
         break;
       }
