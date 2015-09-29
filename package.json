@@ -11,7 +11,8 @@
     "watch-browser": "watchify src/index.js -o 'uglifyjs - -c warnings=false -m > web-verse.min.js'",
     "watch": "concurrent --kill-others --prefix command 'npm run watch-node' 'npm run watch-browser'",
     "test": "karma start karma.conf-ci.js",
-    "test-local": "karma start karma.conf.js"
+    "test-local": "karma start karma.conf.js",
+    "pretest": "npm build"
   },
   "repository": {
     "type": "git",
