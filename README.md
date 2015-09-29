@@ -31,7 +31,7 @@ We can refer to the word `sentences` in the first sentence by using the range,
 `IaaIat:25-33`.
 
 
-## Try it!
+## Try it
 
 `npm run watch`
 
