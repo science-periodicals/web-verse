@@ -4,13 +4,17 @@
   "description": "dynamic paragraph-specific anchor links",
   "main": "index.js",
   "scripts": {
-    "build": "browserify index.js | uglifyjs -mc > web-verse.min.js",
-    "watch": "watchify -r ./index.js:web-verse -o bundle.js -dv",
+    "build-node": "rm -rf dist && babel src --out-dir dist",
+    "build-browser": "browserify dist/index.js | uglifyjs - -c warnings=false -m > web-verse.min.js",
+    "build": "npm run build-node && npm run build-browser",
+    "watch-node": "nodemon -e js -w src/ --exec 'npm run build-node'",
+    "watch-browser": "watchify -r ./dist/index.js:web-verse -o 'uglifyjs - -c warnings=false -m > web-verse.min.js'",
+    "watch": "concurrently --kill-others --prefix command 'npm run watch-node' 'npm run watch-browser'",
     "test": "./mocha"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/standard-analytics/web-verse.git"
+    "url": "https://github.com/scienceai/web-verse.git"
   },
   "keywords": [
     "deep",
@@ -18,21 +22,39 @@
     "hyperlink"
   ],
   "author": "Sebastien Ballesteros",
-  "license": "Apache-v2",
+  "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/standard-analytics/web-verse/issues"
+    "url": "https://github.com/scienceai/web-verse/issues"
   },
-  "homepage": "https://github.com/standard-analytics/web-verse",
+  "homepage": "https://github.com/scienceai/web-verse",
   "dependencies": {
     "fast-levenshtein": "1.0.7",
     "sbd": "1.0.1",
     "uuid": "2.0.1"
   },
   "devDependencies": {
+    "babel": "5.8.23",
+    "babel-core": "5.8.25",
+    "babel-eslint": "4.1.3",
+    "babelify": "6.3.0",
     "browserify": "11.2.0",
+    "concurrently": "0.1.1",
+    "eslint": "1.5.1",
     "jsdom": "6.5.1",
+    "karma": "0.13.10",
+    "karma-chrome-launcher": "0.2.0",
+    "karma-firefox-launcher": "0.1.6",
+    "karma-mocha": "0.2.0",
+    "karma-safari-launcher": "0.1.1",
+    "karma-sauce-launcher": "0.2.14",
     "mocha": "2.3.3",
+    "nodemon": "1.7.1",
     "uglify-js": "^2.4.24",
     "watchify": "^3.0.4"
+  },
+  "browserify": {
+    "transform": [
+      "babelify"
+    ]
   }
 }
