@@ -5,9 +5,12 @@ import Sha1 from 'sha.js/sha1';
 import sbd from 'sbd';
 import uuid from 'uuid';
 import levenshtein from 'fast-levenshtein';
+import escapeRegex from 'escape-regex-string';
 
 const TEXT_NODE = 3;
-export let citeable = ['P', 'LI', 'DD', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'FIGCAPTION', 'CAPTION', 'ASIDE'];
+export let citeable = ['P', 'LI', 'DD', 'DT', 'BLOCKQUOTE', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
+                       'FIGCAPTION', 'CAPTION', 'ASIDE']
+;
 
 /**
  * From a block element, generate a Key
@@ -40,14 +43,15 @@ export function createKey ($el) {
   return key;
 };
 
+// create a sha1 hash for the trimmed content of the given element
 export function createHash ($el) {
   let sha1 = new Sha1();
   // TODO: textContent.replace(/\s+/g, ' ') ??
   return sha1.update($el.textContent.trim(), 'utf8').digest('hex');
 };
 
-
-var getScope = exports.getScope = function(range) {
+// given a range, find the enclosing block element that is part of our whitelist
+export function getScope (range) {
   var $scope = range.commonAncestorContainer;
   if ($scope.nodeType === TEXT_NODE) {
     $scope = $scope.parentElement; //get closest Element
@@ -245,7 +249,7 @@ exports.getChildOffsets = function ($parent, $child) {
 //  it also does not ignore whitespace and math
 exports.getRangesFromText = function ($scope, text) {
   text = text.trim();
-  var re = new RegExp(text, 'ig');
+  var re = new RegExp(escapeRegex(text), 'gi');
   var textNode;
   var textContent = '';
   var it = document.createNodeIterator($scope, NodeFilter.SHOW_TEXT);

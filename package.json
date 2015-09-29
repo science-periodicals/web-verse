@@ -29,6 +29,7 @@
   },
   "homepage": "https://github.com/scienceai/web-verse",
   "dependencies": {
+    "escape-regex-string": "1.0.4",
     "fast-levenshtein": "1.0.7",
     "sbd": "1.0.1",
     "sha.js": "2.4.4",
