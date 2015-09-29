@@ -1,8 +1,3 @@
-// var assert = require('assert')
-//   , jsdom = require('jsdom')
-//   , crypto = require('crypto')
-//   , webVerse = require('..');
-//
 
 function htmlContent (html) {
   var mains = document.getElementsByTagName('main');
@@ -21,7 +16,7 @@ describe('webverse', function () {
     });
 
     it('should compute a key', function () {
-      assert.equal(webVerse.createKey($doc.getElementsByTagName('p')[0]), 'IaaIat');
+      assert.equal(WebVerse.createKey($doc.getElementsByTagName('p')[0]), 'IaaIat');
     });
   });
 
@@ -40,7 +35,7 @@ describe('webverse', function () {
     });
 
     it('should add identifiers', function () {
-      var $citeable = webVerse.addIdentifiers($doc);
+      var $citeable = WebVerse.addIdentifiers($doc);
 
       var $h1 = $citeable.getElementsByTagName('h1')[0];
       assert($h1.getAttribute('data-id'));

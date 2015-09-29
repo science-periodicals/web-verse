@@ -204,7 +204,7 @@ exports.findKey = function(target, candidates) {
 };
 
 
-exports.addIdentifiers = function($doc) {
+exports.addIdentifiers = function ($doc) {
   Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), function($el) {
     $el.setAttribute('data-id', uuid.v1());
     $el.setAttribute('data-hash', createHash($el));
@@ -215,7 +215,7 @@ exports.addIdentifiers = function($doc) {
   return $doc;
 };
 
-exports.getChildOffsets = function($parent, $child) {
+exports.getChildOffsets = function ($parent, $child) {
   var startTextNode;
   if ($child.nodeType === Node.TEXT_NODE) {
     startTextNode = $child;
@@ -256,7 +256,7 @@ exports.getChildOffsets = function($parent, $child) {
 //  need to check that createNodeIterator() normalises text
 //  phantom for testing
 //  it also does not ignore whitespace and math
-exports.getRangesFromText = function($scope, text) {
+exports.getRangesFromText = function ($scope, text) {
   text = text.trim();
   var re = new RegExp(text, 'ig');
   var textNode;
@@ -276,3 +276,5 @@ exports.getRangesFromText = function($scope, text) {
     return rangeFromOffsets($scope, index, index + text.length);
   });
 };
+
+if (typeof window === 'object') window.WebVerse = exports;

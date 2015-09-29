@@ -20,6 +20,7 @@ module.exports = function (config) {
     logLevel: config.LOG_INFO,
     // enable / disable watching file and executing tests whenever any file changes
     autoWatch: true,
+    autoWatchBatchDelay:  10000,
     // Start these browsers, currently available:
     // - Chrome
     // - ChromeCanary
@@ -28,7 +29,7 @@ module.exports = function (config) {
     // - Safari (only Mac)
     // - PhantomJS
     // - IE (only Windows)
-    browsers: ['Chrome', 'Firefox', 'Safari'],
+    browsers: ['Chrome', 'Firefox'],
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: false
