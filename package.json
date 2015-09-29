@@ -10,7 +10,7 @@
     "watch-node": "nodemon -e js -w src/ --exec 'npm run build-node'",
     "watch-browser": "watchify -r ./dist/index.js:web-verse -o 'uglifyjs - -c warnings=false -m > web-verse.min.js'",
     "watch": "concurrently --kill-others --prefix command 'npm run watch-node' 'npm run watch-browser'",
-    "test": "./mocha"
+    "test": "karma start karma.conf-ci.js"
   },
   "repository": {
     "type": "git",
@@ -40,14 +40,15 @@
     "browserify": "11.2.0",
     "concurrently": "0.1.1",
     "eslint": "1.5.1",
+    "jasmine": "2.3.2",
+    "jasmine-core": "2.3.4",
     "jsdom": "6.5.1",
     "karma": "0.13.10",
     "karma-chrome-launcher": "0.2.0",
     "karma-firefox-launcher": "0.1.6",
-    "karma-mocha": "0.2.0",
+    "karma-jasmine": "0.3.6",
     "karma-safari-launcher": "0.1.1",
     "karma-sauce-launcher": "0.2.14",
-    "mocha": "2.3.3",
     "nodemon": "1.7.1",
     "uglify-js": "^2.4.24",
     "watchify": "^3.0.4"
