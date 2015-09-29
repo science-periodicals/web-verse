@@ -113,12 +113,12 @@ export function getOffsets (range, $scope) {
   return { startOffset: startOffset, endOffset: endOffset };
 };
 
-
-var serializeRange = exports.serializeRange = function (range, $scope) {
-  var $scope = $scope || getScope(range);
+// given a range and a scope, returns a data structure with all the details needed to reconstruct it
+export function serializeRange (range, $scope) {
+  let $scope = $scope || getScope(range);
   if (!$scope) return;
 
-  var offsets = getOffsets(range, $scope);
+  let offsets = getOffsets(range, $scope);
 
   return {
     $scope: $scope,
@@ -131,17 +131,10 @@ var serializeRange = exports.serializeRange = function (range, $scope) {
 };
 
 //key:start-end
-exports.serializeSelection = function () {
-  var selection = window.getSelection();
-  var range;
-  if (!selection.isCollapsed) {
-    range = selection.getRangeAt(0);
-  } else {
-    return;
-  }
-
-  return serializeRange(range);
-};
+export function serializeSelection () {
+  let selection = window.getSelection();
+  if (!selection.isCollapsed) return serializeRange(selection.getRangeAt(0));
+}
 
 // XXX
 //  needs to ignore whitespace and MathJAX-generated stuff
