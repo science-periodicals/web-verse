@@ -1,4 +1,7 @@
-# web-verse
+
+# Web Verse
+
+[![Sauce Test Status](https://saucelabs.com/browser-matrix/robinberjon.svg)](https://saucelabs.com/u/robinberjon)
 
 Verses for the web (deep linking text). Inspired by [Emphasis][nyt] by Michael
 Donohoe but leverages the [Range interface][ranges] and
