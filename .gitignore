@@ -31,3 +31,4 @@ bundle.*
 scratch/
 sauce.json
 dist
+web-verse.min.js
