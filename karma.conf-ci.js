@@ -42,9 +42,8 @@ module.exports = function (config) {
     // IE, back to IE9
     'sl_ie-latest': {
       base:         'SauceLabs',
-      browserName:  'internet explorer',
-      platform:     'Windows 10',
-      version:      '12'
+      browserName:  'microsoftedge',
+      platform:     'Windows 10'
     },
     'sl_ie-11': {
       base:         'SauceLabs',
