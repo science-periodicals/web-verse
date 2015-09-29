@@ -68,55 +68,8 @@ export function getScope (range) {
   return $scope;
 }
 
-// Given a range and an element scope, return the start and end offsets into the text that ignore
-// white space.
-export function getOffsets (range, $scope) {
-  let textNodeFromRange = (container) => {
-      if (container.nodeType === TEXT_NODE) return container;
-      for (let i = 0; i < container.childNodes.length; i++) {
-        if (container.childNodes[i].nodeType === TEXT_NODE) return container.childNodes[i];
-    }
-  }
-  , startTextNode = textNodeFromRange(range.startContainer)
-  , endTextNode = textNodeFromRange(range.endContainer)
-  ;
-
-  let node, indStartTextNode, indEndTextNode, ind = 0, textNodes = []
-  ,   it = document.createNodeIterator($scope, SHOW_TEXT);
-  while (node = it.nextNode()) {
-    textNodes.push(node);
-    if (node === startTextNode) {
-      indStartTextNode = ind;
-    }
-    if (node === endTextNode) {
-      indEndTextNode = ind;
-      break;
-    }
-    ind++;
-  }
-
-  // get the offset without taking white space into account
-  let trimmedOffset = (nodes, index, rangeOffset, anchorNode) => {
-      let baseOffset = nodes.slice(0, index).reduce(function (a, b) {
-        return a + b.textContent.trim().length;
-      }, 0);
-      // we subtract the effect of having trimmed the textContent
-      if (rangeOffset !== undefined) {
-        baseOffset += rangeOffset - (anchorNode.textContent.length -
-                                     anchorNode.textContent.replace(/^\s+/, '').length);
-      }
-      return Math.max(0, baseOffset);
-    }
-  , startOffset = trimmedOffset(textNodes, indStartTextNode, range.startOffset, startTextNode)
-  , endOffset = trimmedOffset(textNodes, indEndTextNode, range.endOffset, endTextNode)
-  ;
-
-  return { startOffset: startOffset, endOffset: endOffset };
-}
-
 // given a range and a scope, returns a data structure with all the details needed to reconstruct it
-export function serializeRange (range, $scope) {
-  let $scope = $scope || getScope(range);
+export function serializeRange (range, $scope = getScope(range)) {
   if (!$scope) return;
 
   let offsets = getOffsets(range, $scope);
@@ -151,12 +104,14 @@ export function rangeFromOffsets ($scope, startOffset, endOffset) {
     if (relStartOffset === undefined && ((acc + textContent.length) >= startOffset)) {
       startNode = node;
       // we add back the effect of having trimmed the textContent
-      relStartOffset = Math.max(0, startOffset - acc + (startNode.textContent.length - startNode.textContent.replace(/^\s+/, '').length));
+      relStartOffset = Math.max(0, startOffset - acc + (startNode.textContent.length -
+                                                        startNode.textContent.replace(/^\s+/, '').length));
     }
     if (relEndOffset === undefined && ((acc + textContent.length) >= endOffset)) {
       endNode = node;
       // ditto
-      relEndOffset = Math.max(0, endOffset - acc + (endNode.textContent.length - endNode.textContent.replace(/^\s+/, '').length));
+      relEndOffset = Math.max(0, endOffset - acc + (endNode.textContent.length -
+                                                    endNode.textContent.replace(/^\s+/, '').length));
       break;
     }
     acc += textContent.length;
@@ -208,21 +163,62 @@ export function addIdentifiers ($doc) {
   return $doc;
 };
 
-exports.getChildOffsets = function ($parent, $child) {
-  var startTextNode;
-  if ($child.nodeType === TEXT_NODE) {
-    startTextNode = $child;
-  } else {
-    for (var i = 0; i < $child.childNodes.length; i++) {
-      if ($child.childNodes[i].nodeType === TEXT_NODE) {
-        startTextNode = $child.childNodes[i];
-        break;
-      }
+function textNodeFromNode (container) {
+    if (container.nodeType === TEXT_NODE) return container;
+    for (let i = 0; i < container.childNodes.length; i++) {
+      if (container.childNodes[i].nodeType === TEXT_NODE) return container.childNodes[i];
+  }
+}
+
+function trimmedLength (nodes, index) {
+  return nodes.slice(0, index).reduce(function (a, b) {
+    return a + b.textContent.trim().length;
+  }, 0);
+}
+
+// Given a range and an element scope, return the start and end offsets into the text that ignore
+// white space.
+export function getOffsets (range, $scope) {
+  let startTextNode = textNodeFromNode(range.startContainer)
+  ,   endTextNode = textNodeFromNode(range.endContainer)
+  ;
+
+  let node, indStartTextNode, indEndTextNode, ind = 0, textNodes = []
+  ,   it = document.createNodeIterator($scope, SHOW_TEXT);
+  while (node = it.nextNode()) {
+    textNodes.push(node);
+    if (node === startTextNode) {
+      indStartTextNode = ind;
     }
+    if (node === endTextNode) {
+      indEndTextNode = ind;
+      break;
+    }
+    ind++;
   }
 
-  var node, indStartTextNode, ind = 0, textNodes = [];
-  var it = document.createNodeIterator($parent, SHOW_TEXT);
+  // get the offset without taking white space into account
+  let trimmedOffset = (nodes, index, rangeOffset, anchorNode) => {
+      let baseOffset = trimmedLength(nodes, index);
+      // we subtract the effect of having trimmed the textContent
+      if (rangeOffset !== undefined) {
+        baseOffset += rangeOffset - (anchorNode.textContent.length -
+                                     anchorNode.textContent.replace(/^\s+/, '').length);
+      }
+      return Math.max(0, baseOffset);
+    }
+  , startOffset = trimmedOffset(textNodes, indStartTextNode, range.startOffset, startTextNode)
+  , endOffset = trimmedOffset(textNodes, indEndTextNode, range.endOffset, endTextNode)
+  ;
+
+  return { startOffset: startOffset, endOffset: endOffset };
+}
+
+export function getChildOffsets ($parent, $child) {
+  let startTextNode = textNodeFromNode($child);
+
+  let node, indStartTextNode, ind = 0, textNodes = [];
+  let it = document.createNodeIterator($parent, SHOW_TEXT);
   while (node = it.nextNode()) {
     textNodes.push(node);
     if (node === startTextNode) {
@@ -232,41 +228,31 @@ exports.getChildOffsets = function ($parent, $child) {
     ind++;
   }
 
-  var startOffset = textNodes.slice(0, indStartTextNode).reduce(function(a, b) {
-    return a + b.textContent.trim().length;
-  }, 0);
-
-  var endOffset = textNodes.slice(0, indStartTextNode + 1).reduce(function(a, b) {
-    return a + b.textContent.trim().length;
-  }, 0);
-
+  let startOffset = trimmedLength(textNodes, indStartTextNode);
+  let endOffset = trimmedLength(textNodes, indStartTextNode + 1);
   return { startOffset: startOffset, endOffset: endOffset };
 };
 
-// XXX
-//  this method is all kinds of wrong
-//  the text is used as regular expression without sanitising
-//  need to check that createNodeIterator() normalises text
-//  phantom for testing
-//  it also does not ignore whitespace and math
-exports.getRangesFromText = function ($scope, text) {
+// given a scope and a string, it will find all instances of that string within the
+// scope, and use that to create white-space-independent ranges
+export function getRangesFromText ($scope, text) {
   text = text.trim();
-  var re = new RegExp(escapeRegex(text), 'gi');
-  var textNode;
-  var textContent = '';
-  var it = document.createNodeIterator($scope, SHOW_TEXT);
-  while (textNode = it.nextNode()) {
-    textContent += textNode.textContent.trim();
-  }
+  let re = new RegExp(escapeRegex(text), 'gi')
+    , tc = $scope.textContent
+  ;
+  //  We need to get an offset that ignores whitespace, BUT the regex needs to match
+  //  if it contains whitespace.
+  // So we:
+  //  get all match indices while trimming *nothing*;
+  //  then, for each index, remove the amount of WS that is *before* it (but only before).
 
-  var result;
-  var matchIndexes = [];
-  while ((result = re.exec(textContent)) !== null) {
-    matchIndexes.push(result.index);
-  }
+  let result, matchIndexes = [];
+  while ((result = re.exec(tc)) !== null) matchIndexes.push(result.index);
 
-  return matchIndexes.map(function(index) {
-    return rangeFromOffsets($scope, index, index + text.length);
+  let noWSTextLength = text.replace(/\s+/g, '').length;
+  return matchIndexes.map(function (index) {
+    index -= (tc.substr(0, index).match(/\s/) || []).length;
+    return rangeFromOffsets($scope, index, index + noWSTextLength);
   });
 };
 
