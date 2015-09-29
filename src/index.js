@@ -1,40 +1,35 @@
 
 // inspired by https://github.com/NYTimes/Emphasis
 
-var Sha1 = require('sha.js/sha1')
-  , sbd = require('sbd')
-  , uuid = require('uuid')
-  , levenshtein = require('fast-levenshtein')
-;
+import Sha1 from 'sha.js/sha1';
+import sbd from 'sbd';
+import uuid from 'uuid';
+import levenshtein from 'fast-levenshtein';
 
 const TEXT_NODE = 3;
-
-var citeable = exports.citeable = ['P', 'LI', 'DD', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'FIGCAPTION', 'CAPTION', 'ASIDE'];
+export let citeable = ['P', 'LI', 'DD', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'FIGCAPTION', 'CAPTION', 'ASIDE'];
 
 /**
  * From a block element, generate a Key
  * - Break block element text content into Sentences
  * - Take first and last Sentences
- * - Sometimes the same. Thats ok.
+ * - Sometimes the same. That's ok.
  * - First character from the first three words of each sentence
  * - Each 6 char key refers to specific block element
  */
-var createKey = exports.createKey = function ($el) {
-  var key = '';
-  var len = 6;
-  var txt = ($el.textContent || '').replace(/[^a-z\. ]+/gi, '').trim();
+export function createKey ($el) {
+  let key = '';
+  let len = 6;
+  let txt = ($el.textContent || '').replace(/[^\w\. ]+/gui, '').trim();
 
-  if (txt && txt.length>1) {
-    var lines = sbd.sentences(txt)
-          .map(function(x) {return x.trim();})
-          .filter(function(x) {return x;});
-
+  if (txt && txt.length > 1) {
+    let lines = sbd.sentences(txt).map(x => x.trim()).filter(x => x);
     if (lines.length) {
-      var first = lines[0].match(/\S+/g).slice(0, (len/2));
-      var last = lines[lines.length-1].match(/\S+/g).slice(0, (len/2));
-      var k = first.concat(last);
+      let first = lines[0].match(/\S+/gu).slice(0, (len/2));
+      let last = lines[lines.length-1].match(/\S+/gu).slice(0, (len/2));
+      let k = first.concat(last);
 
-      var max = (k.length > len) ? len : k.length;
+      let max = (k.length > len) ? len : k.length;
 
       for (var i=0; i < max; i++) {
         key += k[i].substring(0, 1);

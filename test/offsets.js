@@ -55,10 +55,8 @@ describe('WebVerse Offsets', function () {
       ,   endEl = document.getElementsByTagName(c.end.el)[c.end.elNum || 0]
       ,   endNode = c.end.child ? endEl.childNodes.item(c.end.child) : endEl.firstChild
       ;
-      console.log('end.child', c.end.child, endEl.childNodes.length);
       range.setStart(startNode, c.start.pos);
       range.setEnd(endNode, c.end.pos);
-      console.log('sn', startNode, 'en', endNode);
       var $scope = document.getElementsByTagName(c.scope.el)[c.scope.elNum || 0];
       var offsets = WebVerse.getOffsets(range, $scope);
       assert.equal(offsets.startOffset, c.result.startOffset, 'startOffset is equal');
