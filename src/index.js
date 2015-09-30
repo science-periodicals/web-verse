@@ -100,21 +100,28 @@ export function rangeFromOffsets ($scope, startOffset, endOffset) {
 
   while (node = it.nextNode()) {
     let textContent = node.textContent.trim();
+    // let textContent = node.textContent;
+    // console.log('textContent', textContent, acc, textContent.length, startOffset);
     if (relStartOffset === undefined && ((acc + textContent.length) >= startOffset)) {
       startNode = node;
+      // console.log('startNode', node);
       // we add back the effect of having trimmed the textContent
       relStartOffset = Math.max(0, startOffset - acc + (startNode.textContent.length -
                                                         startNode.textContent.replace(/^\s+/, '').length));
+      // console.log('start offset', relStartOffset, startOffset, acc, startNode.textContent.length, startNode.textContent.replace(/^\s+/, '').length);
     }
     if (relEndOffset === undefined && ((acc + textContent.length) >= endOffset)) {
       endNode = node;
+      // console.log('endNode', node);
       // ditto
       relEndOffset = Math.max(0, endOffset - acc + (endNode.textContent.length -
                                                     endNode.textContent.replace(/^\s+/, '').length));
+      console.log('end offset', relEndOffset, endOffset, acc, endNode.textContent.length, endNode.textContent.replace(/^\s+/, '').length);
       break;
     }
     acc += textContent.length;
   }
+  // console.log(relStartOffset, relEndOffset);
 
   var range = document.createRange();
   range.setStart(startNode, relStartOffset);
@@ -235,23 +242,28 @@ export function getChildOffsets ($parent, $child) {
 // given a scope and a string, it will find all instances of that string within the
 // scope, and use that to create white-space-independent ranges
 export function getRangesFromText ($scope, text) {
-  text = text.trim();
-  let re = new RegExp(escapeRegex(text), 'gi')
+  // make the text safe to search, but spaces in it need to match \s+
+  text = escapeRegex(text.trim()).replace(/\s+/g, '\\s+');
+  let re = new RegExp(text, 'gi')
     , tc = $scope.textContent
   ;
   //  We need to get an offset that ignores whitespace, BUT the regex needs to match
   //  if it contains whitespace.
   // So we:
   //  get all match indices while trimming *nothing*;
-  //  then, for each index, remove the amount of WS that is *before* it (but only before).
+  //  then, for each index, remove the amount of WS that is *before* it, get the length of the
+  //  match (so that any space becomes a match for \s+), and remove the space from the length of the
+  //  match
 
   let result, matchIndexes = [];
-  while ((result = re.exec(tc)) !== null) matchIndexes.push(result.index);
+  while ((result = re.exec(tc)) !== null) {
+    matchIndexes.push({ index: result.index, length: result[0].length - (result[0].match(/\s/g) || []).length });
+  }
 
-  let noWSTextLength = text.replace(/\s+/g, '').length;
-  return matchIndexes.map(function (index) {
-    index -= (tc.substr(0, index).match(/\s/) || []).length;
-    return rangeFromOffsets($scope, index, index + noWSTextLength);
+  return matchIndexes.map(function (match) {
+    match.index -= (tc.substr(0, match.index).match(/\s/g) || []).length;
+    console.log('numbers are', match.index, match.length);
+    return rangeFromOffsets($scope, match.index, match.index + match.length);
   });
 };
 

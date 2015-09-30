@@ -2,6 +2,7 @@
 # Web Verse
 
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/robinberjon.svg)](https://saucelabs.com/u/robinberjon)
+[![Coverage Status](https://coveralls.io/repos/scienceai/web-verse/badge.svg?branch=master&service=github)](https://coveralls.io/github/scienceai/web-verse?branch=master)
 
 Verses for the web (deep linking text). Inspired by [Emphasis][nyt] by Michael
 Donohoe but leverages the [Range interface][ranges] and
