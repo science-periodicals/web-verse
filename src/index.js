@@ -98,9 +98,12 @@ export function rangeFromOffsets ($scope, startOffset, endOffset) {
   ,   startNode, endNode, relStartOffset, relEndOffset
   ;
 
+  // XXX
+  // is it all supposed to only work with trimming?
+  // this algorithm only works with trimming
   while (node = it.nextNode()) {
-    let textContent = node.textContent.trim();
-    // let textContent = node.textContent;
+    // let textContent = node.textContent.trim();
+    let textContent = node.textContent.replace(/\s+/g, '');
     // console.log('textContent', textContent, acc, textContent.length, startOffset);
     if (relStartOffset === undefined && ((acc + textContent.length) >= startOffset)) {
       startNode = node;
@@ -254,7 +257,6 @@ export function getRangesFromText ($scope, text) {
   //  then, for each index, remove the amount of WS that is *before* it, get the length of the
   //  match (so that any space becomes a match for \s+), and remove the space from the length of the
   //  match
-
   let result, matchIndexes = [];
   while ((result = re.exec(tc)) !== null) {
     matchIndexes.push({ index: result.index, length: result[0].length - (result[0].match(/\s/g) || []).length });
@@ -266,5 +268,9 @@ export function getRangesFromText ($scope, text) {
     return rangeFromOffsets($scope, match.index, match.index + match.length);
   });
 };
+
+export function normalizeText (str) {
+  return String(str).trim().replace(/\s+/, ' ');
+}
 
 if (typeof window === 'object') window.WebVerse = exports;
