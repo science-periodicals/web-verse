@@ -133,7 +133,11 @@ module.exports = function (config) {
     },
     captureTimeout: 120000,
     customLaunchers: customLaunchers,
-    reporters: ['dots', 'saucelabs'],
+    reporters: ['dots', 'saucelabs', 'coverage', 'coveralls'],
+    coverageReporter: {
+      type: 'lcov',
+      dir:  'coverage/'
+    },
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher

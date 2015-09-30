@@ -281,12 +281,10 @@ function countSpaces (text) {
 // Takes a raw offset into a raw text and returns the offset of the same character in a normalised
 // text.
 export function normalizeOffset (rawOffset, rawText) {
-  let workText = rawText.substring(0, rawOffset)
-    , delta = workText.length
-  ;
+  let workText = rawText.substring(0, rawOffset);
   // we have to special-case the leading space because trim() does more than \s
   // the length different once left-trim and space normalisation have happened
-  delta = workText.length - workText.replace(/^[\s\uFEFF\xA0]+/, '').replace(/\s+/g, ' ').length;
+  let delta = workText.length - workText.replace(/^[\s\uFEFF\xA0]+/, '').replace(/\s+/g, ' ').length;
   return rawOffset - delta;
 }
 

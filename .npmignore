@@ -10,3 +10,4 @@ circle.yml
 .travis.yml
 index.html
 sauce.json
+coverage/
