@@ -133,6 +133,7 @@ module.exports = function (config) {
     },
     captureTimeout: 120000,
     customLaunchers: customLaunchers,
+    reporters: ['dots', 'saucelabs'],
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
