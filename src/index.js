@@ -1,7 +1,7 @@
 
 // inspired by https://github.com/NYTimes/Emphasis
 
-import Sha1 from 'sha.js/sha1';
+import SparkMD5 from 'spark-md5';
 import sbd from 'sbd';
 import shortid from 'shortid';
 import levenshtein from 'fast-levenshtein';
@@ -44,11 +44,10 @@ export function createKey ($el) {
   return key;
 }
 
-// create a sha1 hash for the trimmed content of the given element
+// create a md5 hash for the trimmed content of the given element
 export function createHash ($el) {
-  let sha1 = new Sha1();
   // TODO: textContent.replace(/\s+/g, ' ') ??
-  return sha1.update($el.textContent.trim(), 'utf8').digest('hex');
+  return SparkMD5.hash($el.textContent.trim());
 }
 
 // given a range, find the enclosing block element that is part of our whitelist

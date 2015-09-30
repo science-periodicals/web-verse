@@ -9,9 +9,9 @@ describe('WebVerse Basics', function () {
 
   describe('addIdentifiers', function () {
     // this is the output of crypto.createHash('sha1').update('Hello', 'utf8').digest('hex');
-    var hashedHello = 'f7ff9e8b7bb2e09b70935a5d785e0cc5d9d0abf0'
+    var hashedHello = '8b1a9953c4611296a827abf8c47804d7'
       // same with 'world'
-      , hashedWorld = '7c211433f02071597741e6ff5a8ea34789abbf43'
+      , hashedWorld = '7d793037a0760186574b0282f2f435e7'
     ;
 
     it('should add identifiers', function () {

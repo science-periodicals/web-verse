@@ -33,8 +33,8 @@
     "escape-regex-string": "1.0.4",
     "fast-levenshtein": "1.0.7",
     "sbd": "1.0.1",
-    "sha.js": "2.4.4",
     "shortid": "2.2.2",
+    "spark-md5": "1.0.0",
     "uuid": "2.0.1"
   },
   "devDependencies": {
