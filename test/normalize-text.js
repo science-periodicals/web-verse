@@ -21,7 +21,7 @@ describe('WebVerse normalizeText', function () {
   cases.forEach(function (c) {
     it(c.desc, function () {
       var out = WebVerse.normalizeText(c.in);
-      assert.equal(out, c.out, 'string match');
+      assert.equal(out, c.out, 'strings match');
     });
   });
 });

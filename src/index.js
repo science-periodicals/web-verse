@@ -269,8 +269,25 @@ export function getRangesFromText ($scope, text) {
   });
 };
 
-export function normalizeText (str) {
-  return String(str).trim().replace(/\s+/, ' ');
+// returns text that has been trimmed and with all white space normalised to space
+export function normalizeText (text) {
+  return String(text).trim().replace(/\s+/, ' ');
+}
+
+function countSpaces (text) {
+  return (text.match(/\s/g) || []).length;
+}
+
+// Takes a raw offset into a raw text and returns the offset of the same character in a normalised
+// text.
+export function normalizeOffset (rawOffset, rawText) {
+  let workText = rawText.substring(0, rawOffset)
+    , delta = workText.length
+  ;
+  // we have to special-case the leading space because trim() does more than \s
+  // the length different once left-trim and space normalisation have happened
+  delta = workText.length - workText.replace(/^[\s\uFEFF\xA0]+/, '').replace(/\s+/g, ' ').length;
+  return rawOffset - delta;
 }
 
 if (typeof window === 'object') window.WebVerse = exports;
