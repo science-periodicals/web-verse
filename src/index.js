@@ -94,7 +94,7 @@ export function serializeSelection () {
 // white space into account and captures that content
 export function rangeFromOffsets ($scope, startOffset, endOffset) {
   let node
-  ,   it = document.createNodeIterator($scope, SHOW_TEXT)
+  ,   it = document.createNodeIterator($scope, SHOW_TEXT, null, true)
   ,   acc = 0
   ,   startNode, endNode, relStartOffset, relEndOffset
   ;
@@ -184,7 +184,7 @@ export function getOffsets (range, $scope) {
   ;
 
   let node, indStartTextNode, indEndTextNode, ind = 0, textNodes = []
-  ,   it = document.createNodeIterator($scope, SHOW_TEXT);
+  ,   it = document.createNodeIterator($scope, SHOW_TEXT, null, true);
   while (node = it.nextNode()) {
     textNodes.push(node);
     if (node === startTextNode) {
@@ -218,7 +218,7 @@ export function getChildOffsets ($parent, $child) {
   let startTextNode = textNodeFromNode($child);
 
   let node, indStartTextNode, ind = 0, textNodes = [];
-  let it = document.createNodeIterator($parent, SHOW_TEXT);
+  let it = document.createNodeIterator($parent, SHOW_TEXT, null, true);
   while (node = it.nextNode()) {
     textNodes.push(node);
     if (node === startTextNode) {
