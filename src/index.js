@@ -9,6 +9,19 @@ import escapeRegex from 'escape-regex-string';
 
 const TEXT_NODE = 3;
 const SHOW_TEXT = 4;
+// this is here because I don't trust \s to be correct across browsers
+const SPACE = '[ \\f\\n\\r\\t\\v\​\u00a0\\u1680​\\u180e\\u2000-\\u200a​\\u2028\\u2029\\u202f\\u205f​\\u3000\\ufeff]';
+const NOT_SPACE = SPACE.replace('[', '[^');
+const RE_ONLY_SPACE = new RegExp('^' + SPACE + '+$');
+const RE_NOT_SPACES = new RegExp(NOT_SPACE + '+');
+const RE_TRIM_LEFT = new RegExp('^' + SPACE + '*');
+const RE_TRIM_RIGHT = new RegExp(SPACE + '*$');
+const RE_TRIM_LEFT_CAPTURE = new RegExp('^(' + SPACE + '*)');
+const RE_TRIM_RIGHT_CAPTURE = new RegExp('(' + SPACE + '*)$');
+const RE_TRIM = new RegExp('^' + SPACE + '*|' + SPACE + '*$', 'g');
+const leftTrim = (str) => String(str).replace(RE_TRIM_LEFT, '');
+const rightTrim = (str) => String(str).replace(RE_TRIM_RIGHT, '');
+const trim = (str) => String(str).replace(RE_TRIM, '');
 export let citeable = ['P', 'LI', 'DD', 'DT', 'BLOCKQUOTE', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
                        'FIGCAPTION', 'CAPTION', 'ASIDE', 'SECTION', 'ARTICLE', 'BODY', 'DIV', 'MAIN']
 ;
@@ -24,10 +37,10 @@ export let citeable = ['P', 'LI', 'DD', 'DT', 'BLOCKQUOTE', 'H1', 'H2', 'H3', 'H
 export function createKey ($el) {
   let key = '';
   let len = 6;
-  let txt = ($el.textContent || '').replace(/[^\w\. ]+/gui, '').trim();
+  let txt = trim(($el.textContent || '').replace(/[^\w\. ]+/gui, ''));
 
   if (txt && txt.length > 1) {
-    let lines = sbd.sentences(txt).map(x => x.trim()).filter(x => x);
+    let lines = sbd.sentences(txt).map(x => trim(x)).filter(x => x);
     if (lines.length) {
       let first = lines[0].match(/\S+/gu).slice(0, (len/2));
       let last = lines[lines.length-1].match(/\S+/gu).slice(0, (len/2));
@@ -47,7 +60,7 @@ export function createKey ($el) {
 // create a md5 hash for the trimmed content of the given element
 export function createHash ($el) {
   // TODO: textContent.replace(/\s+/g, ' ') ??
-  return SparkMD5.hash($el.textContent.trim());
+  return SparkMD5.hash(trim($el.textContent));
 }
 
 // given a range, find the enclosing block element that is part of our whitelist
@@ -79,7 +92,7 @@ export function serializeRange (range, $scope = getScope(range)) {
     key: createKey($scope),
     startOffset: offsets.startOffset,
     endOffset: offsets.endOffset,
-    text: range.toString().trim()
+    text: trim(range.toString())
   };
 }
 
@@ -181,7 +194,7 @@ function textNodeFromNode (container) {
 
 function trimmedLength (nodes, index) {
   return nodes.slice(0, index).reduce(function (a, b) {
-    return a + b.textContent.trim().length;
+    return a + trim(b.textContent).length;
   }, 0);
 }
 
@@ -246,7 +259,7 @@ export function getChildOffsets ($parent, $child) {
 // scope, and use that to create white-space-independent ranges
 export function getRangesFromText ($scope, text) {
   // make the text safe to search, but spaces in it need to match \s+
-  text = escapeRegex(text.trim()).replace(/\s+/g, '\\s+');
+  text = escapeRegex(trim(text)).replace(/\s+/g, '\\s+');
   let re = new RegExp(text, 'gi')
     , tc = $scope.textContent
   ;
@@ -271,11 +284,7 @@ export function getRangesFromText ($scope, text) {
 
 // returns text that has been trimmed and with all white space normalised to space
 export function normalizeText (text) {
-  return String(text).trim().replace(/\s+/, ' ');
-}
-
-function countSpaces (text) {
-  return (text.match(/\s/g) || []).length;
+  return trim(text).replace(/\s+/, ' ');
 }
 
 // Takes a raw offset into a raw text and returns the offset of the same character in a normalised
@@ -288,4 +297,43 @@ export function normalizeOffset (rawOffset, rawText) {
   return rawOffset - delta;
 }
 
+// Takes a normalised offset and a raw text, and returns the corresponding raw offset
+export function denormalizeOffset (normOffset, rawText) {
+  normOffset = parseInt(normOffset, 10);
+  // process the text into blocks that are either:
+  //  - simple non-white-space text
+  //  - simple white space
+  // in each case the block is given a normalised length, which is how long it would be in normal
+  // text, and a raw length, which is its actual length. The first and last white space blocks gets
+  // normal lengths of 0, others of 1.
+  // then for each block, if the normal offset would be in the block we compute it, otherwise we
+  // increment our raw and normal offsets and move to the next block
+  let leftTrimMatch = rawText.match(RE_TRIM_LEFT_CAPTURE)
+    , rightTrimMatch = rawText.match(RE_TRIM_RIGHT_CAPTURE)
+  ;
+  rawText = trim(rawText);
+  let blocks = rawText.split(/(\s+)/).map(b => {
+    return { rawLength: b.length, normalLength: RE_ONLY_SPACE.test(b) ? 1 : b.length };
+  });
+  blocks.unshift({ rawLength: leftTrimMatch[1].length, normalLength: 0 });
+  blocks.push({ rawLength: rightTrimMatch[1].length, normalLength: 0 });
+
+  let rawOffset = 0
+    , normalisingOffset = 0
+  ;
+  for (var i = 0; i < blocks.length; i++) {
+    let block = blocks[i];
+    if (block.normalLength + normalisingOffset >= normOffset) {
+      return rawOffset + (block.rawLength - block.normalLength) + (normOffset - normalisingOffset);
+    }
+    else {
+      rawOffset += block.rawLength;
+      normalisingOffset += block.normalLength;
+    }
+  }
+  return rawOffset;
+}
+
 if (typeof window === 'object') window.WebVerse = exports;
+
+// XXX need to handle \S and \s properly, unless /u which probably makes \S right
