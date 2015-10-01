@@ -25,7 +25,14 @@
     "linking",
     "hyperlink"
   ],
-  "author": "Sebastien Ballesteros",
+  "contributors": [
+    "Sebastien Ballesteros",
+    {
+      "name": "Robin Berjon",
+      "email": "robin@science.ai",
+      "url":  "http://berjon.com/"
+    }
+  ],
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/scienceai/web-verse/issues"
