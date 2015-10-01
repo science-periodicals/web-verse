@@ -220,24 +220,24 @@ export function getOffsets (range, $scope) {
   return { startOffset: normalizeOffset(rawStartOffset, txt), endOffset: normalizeOffset(rawEndOffset, txt) };
 }
 
-// XXX broken: ditto
+// get the raw offsets of the start and end of a given child text node (or element containing one)
 export function getChildOffsets ($parent, $child) {
   let startTextNode = textNodeFromNode($child);
 
-  let node, indStartTextNode, ind = 0, textNodes = [];
-  let it = document.createNodeIterator($parent, SHOW_TEXT, null, true);
+  let node
+  ,   rawStartOffset, rawEndOffset
+  ,   textNodes = []
+  ,   it = document.createNodeIterator($parent, SHOW_TEXT, null, true);
   while (node = it.nextNode()) {
-    textNodes.push(node);
     if (node === startTextNode) {
-      indStartTextNode = ind;
-      break;
+      rawStartOffset = textNodes.map(tn => tn.textContent.length)
+                                .reduce((a, b) => { return a + b; }, 0)
+      ;
+      rawEndOffset = rawStartOffset + node.textContent.length;
     }
-    ind++;
+    textNodes.push(node);
   }
-
-  let startOffset = trimmedLength(textNodes, indStartTextNode);
-  let endOffset = trimmedLength(textNodes, indStartTextNode + 1);
-  return { startOffset: startOffset, endOffset: endOffset };
+  return { startOffset: rawStartOffset, endOffset: rawEndOffset };
 };
 
 // given a scope and a string, it will find all instances of that string within the
