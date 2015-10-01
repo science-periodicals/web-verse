@@ -1,4 +1,5 @@
 
+(function () {
 var cases = [
   {
     desc: 'should trim pre and post',
@@ -30,3 +31,4 @@ describe('WebVerse normalizeText', function () {
     });
   });
 });
+})();

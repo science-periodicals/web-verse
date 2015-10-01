@@ -187,48 +187,37 @@ function textNodeFromNode (container) {
 }
 
 function trimmedLength (nodes, index) {
-  return nodes.slice(0, index).reduce(function (a, b) {
-    return a + trim(b.textContent).length;
-  }, 0);
+  return nodes.slice(0, index).reduce((a, b) => { return a + trim(b.textContent).length; }, 0);
 }
 
 // Given a range and an element scope, return the start and end offsets into the text that ignore
 // white space.
-// XXX broken: needs to use the offset helpers
 export function getOffsets (range, $scope) {
   let startTextNode = textNodeFromNode(range.startContainer)
   ,   endTextNode = textNodeFromNode(range.endContainer)
   ;
 
-  let node, indStartTextNode, indEndTextNode, ind = 0, textNodes = []
+  let node, textNodes = []
+  ,   rawStartOffset, rawEndOffset
   ,   it = document.createNodeIterator($scope, SHOW_TEXT, null, true);
   while (node = it.nextNode()) {
-    textNodes.push(node);
     if (node === startTextNode) {
-      indStartTextNode = ind;
+      rawStartOffset = textNodes.map(tn => tn.textContent.length)
+                                .reduce((a, b) => { return a + b; }, 0) +
+                                range.startOffset
+      ;
     }
     if (node === endTextNode) {
-      indEndTextNode = ind;
-      break;
+      rawEndOffset = textNodes.map(tn => tn.textContent.length)
+                              .reduce((a, b) => { return a + b; }, 0) +
+                              range.endOffset
+      ;
     }
-    ind++;
+    textNodes.push(node);
+    if (rawEndOffset !== undefined) break;
   }
-
-  // get the offset without taking white space into account
-  let trimmedOffset = (nodes, index, rangeOffset, anchorNode) => {
-      let baseOffset = trimmedLength(nodes, index);
-      // we subtract the effect of having trimmed the textContent
-      if (rangeOffset !== undefined) {
-        baseOffset += rangeOffset - (anchorNode.textContent.length -
-                                     anchorNode.textContent.replace(/^\s+/, '').length);
-      }
-      return Math.max(0, baseOffset);
-    }
-  , startOffset = trimmedOffset(textNodes, indStartTextNode, range.startOffset, startTextNode)
-  , endOffset = trimmedOffset(textNodes, indEndTextNode, range.endOffset, endTextNode)
-  ;
-
-  return { startOffset: startOffset, endOffset: endOffset };
+  var txt = textNodes.map(t => t.textContent).join('');
+  return { startOffset: normalizeOffset(rawStartOffset, txt), endOffset: normalizeOffset(rawEndOffset, txt) };
 }
 
 // XXX broken: ditto

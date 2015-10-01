@@ -1,4 +1,5 @@
 
+(function () {
 var cases = [
   {
     it:     'should handle simple offset into an h1',
@@ -6,10 +7,10 @@ var cases = [
     start:  { el: 'h1', pos: 1 },
     end:    { el: 'strong', pos: 4 },
     scope:  { el: 'h1' },
-    result: { startOffset: 1, endOffset: 6 }
+    result: { startOffset: 1, endOffset: 7 }
   }
 , {
-    it:     'should handle an pretty empty offset',
+    it:     'should handle an pretty empty offset (normalise to 0)',
     html:   '<ruby> </ruby>',
     start:  { el: 'ruby', pos: 0 },
     end:    { el: 'ruby', pos: 1 },
@@ -28,7 +29,7 @@ var cases = [
     start:  { el: 'span', elNum: 2, pos: 0 },
     end:    { el: 'span', elNum: 3, pos: 1 },
     scope:  { el: 'p' },
-    result: { startOffset: 1, endOffset: 3 }
+    result: { startOffset: 2, endOffset: 5 }
   }
 , {
     it:     'should handle offsets over empty elements',
@@ -38,9 +39,9 @@ var cases = [
               'nulla.',
               '  </p>'].join('\n'),
     start:  { el: 'p', pos: 8 },
-    end:    { el: 'p', child: 2, pos: 4 },
+    end:    { el: 'p', child: 2, pos: 5 },
     scope:  { el: 'p' },
-    result: { startOffset: 3, endOffset: 11 }
+    result: { startOffset: 3, endOffset: 13 }
   }
 ];
 
@@ -51,7 +52,7 @@ describe('WebVerse Offsets', function () {
       document.normalize();
       var range = document.createRange()
       ,   startEl = document.getElementsByTagName(c.start.el)[c.start.elNum || 0]
-      ,   startNode = c.start.child ? startEl.firstChild : startEl.childNodes.item(c.start.child)
+      ,   startNode = c.start.child ? startEl.childNodes.item(c.start.child) : startEl.firstChild
       ,   endEl = document.getElementsByTagName(c.end.el)[c.end.elNum || 0]
       ,   endNode = c.end.child ? endEl.childNodes.item(c.end.child) : endEl.firstChild
       ;
@@ -64,3 +65,4 @@ describe('WebVerse Offsets', function () {
     });
   });
 });
+})();

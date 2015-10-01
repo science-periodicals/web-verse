@@ -1,4 +1,5 @@
 
+(function () {
 var cases = [
   {
     desc: 'should find the simplest string',
@@ -52,3 +53,4 @@ describe('WebVerse getRangesFromText', function () {
     });
   });
 });
+})();

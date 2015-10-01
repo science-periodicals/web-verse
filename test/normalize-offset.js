@@ -1,4 +1,5 @@
 
+(function () {
 var cases = [
   {
     desc: 'should handle a trivial string',
@@ -67,3 +68,4 @@ describe('WebVerse denormalizeOffset', function () {
     });
   });
 });
+})();
