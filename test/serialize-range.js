@@ -60,5 +60,4 @@ describe('WebVerse serializeSelection', function () {
     assert.equal(res.endOffset, 11, 'normalised the end offset');
   });
 });
-
 })();
