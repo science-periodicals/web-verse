@@ -23,9 +23,14 @@ of Web Verse.
 We fingerprint a block-level element (e.g. a paragraph) by:
 
 1. Normalising the text to abstract away from markup and formatting differences.
-1. Breaking the text into sentences. [1]
-2. Taking the first and last sentences. [2]
-3. Taking the first character from the first three words of each sentence. [3]
+
+2. Breaking the text into sentences. We attempt to be smart about handling full-stops. We'll ignore
+   things like "Dr. Who" and a number of similar cases. It is generally enough to avoid getting
+   single word nonsense for our sentences.
+3. Taking the first and last sentences. It's OK if the first and last sentences are the same, the
+   key is still meaningful.
+4. Taking the first character from the first three words of each sentence. Words are defined as
+   tokens composed of a run of non-white-space characters.
 
 These fingerprints [have been shown][jsconf] to provide reasonable uniqueness for reasonably-sized
 documents. Since it's deterministic yet not dependent on all the content, this method is tolerant to
@@ -200,15 +205,6 @@ continuously. It is also a good idea to `npm run test-local`, which will keep th
 running (just in Chrome, so as not to be too invasive) whenever you make changes.
 
 ---
-
-1: We attempt to be smart about handling full-stops. We'll ignore things like
-   "Dr. Who" and a number of similar cases. It is generally enough to avoid getting
-   single word nonsense for our sentences.
-
-2: It's OK if the first and last sentences are the same, the key is still meaningful.
-
-3: Words are defined as tokens composed of a run of non-white-space characters.
-
 [jsconf]: http://2014.jsconf.eu/speakers/michael-donohoe-deeplink-to-anything-on-the-web.html
 [nyt]: https://github.com/NYTimes/Emphasis
 [ranges]: https://developer.mozilla.org/en-US/docs/Web/API/Range
