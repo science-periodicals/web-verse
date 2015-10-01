@@ -267,6 +267,7 @@ export function getChildOffsets ($parent, $child) {
 
 // given a scope and a string, it will find all instances of that string within the
 // scope, and use that to create white-space-independent ranges
+// XXX broken: use offset helpers
 export function getRangesFromText ($scope, text) {
   // make the text safe to search, but spaces in it need to match \s+
   text = escapeRegex(trim(text)).replace(RE_SPACES_GLOBAL, SPACE + '+');
@@ -301,8 +302,7 @@ export function normalizeText (text) {
 // text.
 export function normalizeOffset (rawOffset, rawText) {
   let workText = rawText.substring(0, rawOffset);
-  // we have to special-case the leading space because trim() does more than \s
-  // the length different once left-trim and space normalisation have happened
+  // the length difference once left-trim and space normalisation have happened
   let delta = workText.length - workText.replace(RE_TRIM_LEFT, '').replace(RE_SPACES, ' ').length;
   return rawOffset - delta;
 }
