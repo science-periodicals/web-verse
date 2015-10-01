@@ -57,7 +57,9 @@ describe('WebVerse getScope', function () {
       range.setStart($node, c.offsets[0]);
       range.setEnd($node, c.offsets[1]);
       var $scope = WebVerse.getScope(range);
-      assert.equal(c.check($scope), c.result, 'check produces ' + c.result);
+      assert.equal(c.check($scope), c.result, 'check on range produces ' + c.result);
+      $scope = WebVerse.getScope($node);
+      assert.equal(c.check($scope), c.result, 'check on node produces ' + c.result);
     });
   });
 });

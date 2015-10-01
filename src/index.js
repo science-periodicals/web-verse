@@ -69,9 +69,9 @@ export function createHash ($el) {
   return SparkMD5.hash(normalizeText($el.textContent));
 }
 
-// given a range, find the enclosing block element that is part of our whitelist
-export function getScope (range) {
-  var $scope = range.commonAncestorContainer;
+// given a node or range, find the enclosing block element that is part of our whitelist
+export function getScope (nodeOrRange) {
+  var $scope = nodeOrRange.nodeType ? nodeOrRange : nodeOrRange.commonAncestorContainer;
   // get closest Element
   if ($scope.nodeType === TEXT_NODE) $scope = $scope.parentElement;
 
@@ -86,9 +86,7 @@ export function getScope (range) {
 // given a range and a scope, returns a data structure with all the details needed to reconstruct it
 export function serializeRange (range, $scope = getScope(range)) {
   if (!$scope) return;
-
   let offsets = getOffsets(range, $scope);
-
   return {
     $scope: $scope,
     hash: createHash($scope),
@@ -102,6 +100,21 @@ export function serializeRange (range, $scope = getScope(range)) {
 export function serializeSelection () {
   let selection = window.getSelection();
   if (!selection.isCollapsed) return serializeRange(selection.getRangeAt(0));
+}
+
+// The same as `serializeRange()` but instead of a `Range` it uses a node, taking its own text
+// content as the offsets into the given scope. If no scoping `$el` is given, it will use
+// `getScope($node)`.
+export function serializeNode ($node, $scope = getScope($node)) {
+  if (!$scope) return;
+  let offsets = getChildOffsets($scope, $node);
+  return {
+    $scope: $scope,
+    hash: createHash($scope),
+    key: createKey($scope),
+    startOffset: offsets.startOffset,
+    endOffset: offsets.endOffset
+  };
 }
 
 // given a scope and normalised start/end offsets that ignore white space, returns a range using the

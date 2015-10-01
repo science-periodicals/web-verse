@@ -8,7 +8,9 @@ describe('WebVerse serializeRange', function () {
     range.setStart($tit, 0);
     range.setEnd($tit, 0);
     var res = WebVerse.serializeRange(range);
-    assert.equal(res, undefined, 'returned undefined');
+    assert.equal(res, undefined, 'returned undefined for range');
+    res = WebVerse.serializeNode($tit);
+    assert.equal(res, undefined, 'returned undefined for node');
   });
 
   it('should default the scope', function () {
@@ -19,7 +21,9 @@ describe('WebVerse serializeRange', function () {
     range.setStart($span, 0);
     range.setEnd($span, 0);
     var res = WebVerse.serializeRange(range);
-    assert.equal(res.$scope.id, 'x', 'returned scope with id=x');
+    assert.equal(res.$scope.id, 'x', 'returned scope with id=x for range');
+    res = WebVerse.serializeNode($span);
+    assert.equal(res.$scope.id, 'x', 'returned scope with id=x for node');
   });
 
   it('should return proper details', function () {
@@ -31,11 +35,17 @@ describe('WebVerse serializeRange', function () {
     range.setStart($p.firstChild, 3);
     range.setEnd($p.childNodes.item(3).firstChild, 5);
     var res = WebVerse.serializeRange(range, $main);
-    assert.equal(res.$scope, $main, 'used the given scope');
-    assert.equal(res.hash, hashedHW, 'hashed the content properly');
-    assert.equal(res.key, 'hwhw', 'generates the correct key');
-    assert.equal(res.startOffset, 0, 'normalised the start offset');
-    assert.equal(res.endOffset, 11, 'normalised the end offset');
+    assert.equal(res.$scope, $main, 'used the given scope for range');
+    assert.equal(res.hash, hashedHW, 'hashed the content properly for range');
+    assert.equal(res.key, 'hwhw', 'generates the correct key for range');
+    assert.equal(res.startOffset, 0, 'normalised the start offset for range');
+    assert.equal(res.endOffset, 11, 'normalised the end offset for range');
+    res = WebVerse.serializeNode($p.childNodes.item(1), $main);
+    assert.equal(res.$scope, $main, 'used the given scope for node');
+    assert.equal(res.hash, hashedHW, 'hashed the content properly for node');
+    assert.equal(res.key, 'hwhw', 'generates the correct key for node');
+    assert.equal(res.startOffset, 0, 'normalised the start offset for node');
+    assert.equal(res.endOffset, 5, 'normalised the end offset for node');
   });
 });
 describe('WebVerse serializeSelection', function () {

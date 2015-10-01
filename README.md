@@ -166,11 +166,11 @@ manipulate the text in the same manner as Web Verse does, for instance to extend
 Does the reverse of the previous one: given a normalised offset and the *raw* text, it will return
 the matching raw offset.
 
-### `$element = WebVerse.getScope(range)`
+### `$element = WebVerse.getScope(range|$node)`
 
-Given a range, will return the closest enclosing element that may scope it (i.e. a block-level
-element from `citeable`). This can the range's `commonAncestorContainer` or any of its parents. If
-it goes up the tree without finding a valid candidate, it will return `undefined`.
+Given a range or a `$node`, will return the closest enclosing element that may scope it (i.e. a
+block-level element from `citeable`). This can the range's `commonAncestorContainer` or any of its
+parents. If it goes up the tree without finding a valid candidate, it will return `undefined`.
 
 ### `details = WebVerse.getOffsets(range, $el)`
 
