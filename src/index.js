@@ -9,10 +9,17 @@ import escapeRegex from 'escape-regex-string';
 
 const TEXT_NODE = 3;
 const SHOW_TEXT = 4;
+// welcome to a world of horrors
 // this is here because I don't trust \s to be correct across browsers
+// TODO: if we can ascertain that it is reliable enough, or make Babel transforms it correctly with /u
+// inline this whole mess
 const SPACE = '[ \\f\\n\\r\\t\\v\​\u00a0\\u1680​\\u180e\\u2000-\\u200a​\\u2028\\u2029\\u202f\\u205f​\\u3000\\ufeff]';
 const NOT_SPACE = SPACE.replace('[', '[^');
 const RE_ONLY_SPACE = new RegExp('^' + SPACE + '+$');
+const RE_SPACES = new RegExp(SPACE + '+');
+const RE_SPACES_CAPTURE = new RegExp('(' + SPACE + '+)');
+const RE_SPACES_GLOBAL = new RegExp(SPACE + '+', 'g');
+const RE_SPACE_GLOBAL = new RegExp(SPACE, 'g');
 const RE_NOT_SPACES = new RegExp(NOT_SPACE + '+');
 const RE_TRIM_LEFT = new RegExp('^' + SPACE + '*');
 const RE_TRIM_RIGHT = new RegExp(SPACE + '*$');
@@ -58,8 +65,8 @@ export function createKey ($el) {
 }
 
 // create a md5 hash for the trimmed content of the given element
+// XXX broken: normalise the text
 export function createHash ($el) {
-  // TODO: textContent.replace(/\s+/g, ' ') ??
   return SparkMD5.hash(trim($el.textContent));
 }
 
@@ -104,6 +111,7 @@ export function serializeSelection () {
 
 // given a scope and start/end offsets that ignore white space, returns a range that takes the
 // white space into account and captures that content
+// XXX broken: needs to use the offset helpers
 export function rangeFromOffsets ($scope, startOffset, endOffset) {
   let node
   ,   it = document.createNodeIterator($scope, SHOW_TEXT, null, true)
@@ -200,6 +208,7 @@ function trimmedLength (nodes, index) {
 
 // Given a range and an element scope, return the start and end offsets into the text that ignore
 // white space.
+// XXX broken: needs to use the offset helpers
 export function getOffsets (range, $scope) {
   let startTextNode = textNodeFromNode(range.startContainer)
   ,   endTextNode = textNodeFromNode(range.endContainer)
@@ -236,6 +245,7 @@ export function getOffsets (range, $scope) {
   return { startOffset: startOffset, endOffset: endOffset };
 }
 
+// XXX broken: ditto
 export function getChildOffsets ($parent, $child) {
   let startTextNode = textNodeFromNode($child);
 
@@ -259,7 +269,7 @@ export function getChildOffsets ($parent, $child) {
 // scope, and use that to create white-space-independent ranges
 export function getRangesFromText ($scope, text) {
   // make the text safe to search, but spaces in it need to match \s+
-  text = escapeRegex(trim(text)).replace(/\s+/g, '\\s+');
+  text = escapeRegex(trim(text)).replace(RE_SPACES_GLOBAL, SPACE + '+');
   let re = new RegExp(text, 'gi')
     , tc = $scope.textContent
   ;
@@ -272,11 +282,11 @@ export function getRangesFromText ($scope, text) {
   //  match
   let result, matchIndexes = [];
   while ((result = re.exec(tc)) !== null) {
-    matchIndexes.push({ index: result.index, length: result[0].length - (result[0].match(/\s/g) || []).length });
+    matchIndexes.push({ index: result.index, length: result[0].length - (result[0].match(RE_SPACE_GLOBAL) || []).length });
   }
 
   return matchIndexes.map(function (match) {
-    match.index -= (tc.substr(0, match.index).match(/\s/g) || []).length;
+    match.index -= (tc.substr(0, match.index).match(RE_SPACE_GLOBAL) || []).length;
     console.log('numbers are', match.index, match.length);
     return rangeFromOffsets($scope, match.index, match.index + match.length);
   });
@@ -284,7 +294,7 @@ export function getRangesFromText ($scope, text) {
 
 // returns text that has been trimmed and with all white space normalised to space
 export function normalizeText (text) {
-  return trim(text).replace(/\s+/, ' ');
+  return trim(text).replace(RE_SPACES, ' ');
 }
 
 // Takes a raw offset into a raw text and returns the offset of the same character in a normalised
@@ -293,7 +303,7 @@ export function normalizeOffset (rawOffset, rawText) {
   let workText = rawText.substring(0, rawOffset);
   // we have to special-case the leading space because trim() does more than \s
   // the length different once left-trim and space normalisation have happened
-  let delta = workText.length - workText.replace(/^[\s\uFEFF\xA0]+/, '').replace(/\s+/g, ' ').length;
+  let delta = workText.length - workText.replace(RE_TRIM_LEFT, '').replace(RE_SPACES, ' ').length;
   return rawOffset - delta;
 }
 
@@ -312,7 +322,7 @@ export function denormalizeOffset (normOffset, rawText) {
     , rightTrimMatch = rawText.match(RE_TRIM_RIGHT_CAPTURE)
   ;
   rawText = trim(rawText);
-  let blocks = rawText.split(/(\s+)/).map(b => {
+  let blocks = rawText.split(RE_SPACES_CAPTURE).map(b => {
     return { rawLength: b.length, normalLength: RE_ONLY_SPACE.test(b) ? 1 : b.length };
   });
   blocks.unshift({ rawLength: leftTrimMatch[1].length, normalLength: 0 });
@@ -335,5 +345,3 @@ export function denormalizeOffset (normOffset, rawText) {
 }
 
 if (typeof window === 'object') window.WebVerse = exports;
-
-// XXX need to handle \S and \s properly, unless /u which probably makes \S right
