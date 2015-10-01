@@ -8,7 +8,7 @@
     "build-cover": "browserify src/index.js -o web-verse.js",
     "build-browser": "browserify src/index.js | uglifyjs - -c warnings=false -m > web-verse.min.js",
     "show-build": "browserify --deps src/index.js",
-    "build": "npm run build-node && npm run build-browser",
+    "build": "npm run build-node && npm run build-browser && npm run build-cover",
     "watch-node": "nodemon -e js -w src/ --exec 'npm run build-node'",
     "watch-cover": "watchify src/index.js -o web-verse.js",
     "watch-browser": "watchify src/index.js -o 'uglifyjs - -c warnings=false -m > web-verse.min.js'",

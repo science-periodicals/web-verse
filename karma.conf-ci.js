@@ -16,7 +16,6 @@ module.exports = function (config) {
       process.env.SAUCE_ACCESS_KEY = require('./sauce.json').accessKey;
     }
   }
-  // XXX need to add quite a few more here
   // Browsers to run on Sauce Labs
   var customLaunchers = {
     // chrome, two versions back
