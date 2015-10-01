@@ -121,7 +121,7 @@ export function serializeNode ($node, $scope = getScope($node)) {
 // raw offsets
 export function rangeFromOffsets ($scope, startOffset, endOffset) {
   let node
-  ,   it = document.createNodeIterator($scope, SHOW_TEXT, null, true)
+  ,   it = $scope.ownerDocument.createNodeIterator($scope, SHOW_TEXT, null, true)
   ,   accumulator = 0
   ,   startNode, endNode, relStartOffset, relEndOffset
   ;
@@ -143,7 +143,7 @@ export function rangeFromOffsets ($scope, startOffset, endOffset) {
     acc += tc.length;
   }
 
-  var range = document.createRange();
+  var range = $scope.ownerDocument.createRange();
   range.setStart(startNode, relStartOffset);
   range.setEnd(endNode, relEndOffset);
   return range;
@@ -204,7 +204,7 @@ export function getOffsets (range, $scope) {
 
   let node, textNodes = []
   ,   rawStartOffset, rawEndOffset
-  ,   it = document.createNodeIterator($scope, SHOW_TEXT, null, true);
+  ,   it = $scope.ownerDocument.createNodeIterator($scope, SHOW_TEXT, null, true);
   while (node = it.nextNode()) {
     if (node === startTextNode) {
       rawStartOffset = textNodes.map(tn => tn.textContent.length)
@@ -233,7 +233,7 @@ export function getChildOffsets ($parent, $child) {
   let node
   ,   rawStartOffset, rawEndOffset
   ,   textNodes = []
-  ,   it = document.createNodeIterator($parent, SHOW_TEXT, null, true);
+  ,   it = $parent.ownerDocument.createNodeIterator($parent, SHOW_TEXT, null, true);
   while (node = it.nextNode()) {
     if (node === startTextNode) {
       rawStartOffset = textNodes.map(tn => tn.textContent.length)
