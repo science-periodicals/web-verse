@@ -108,48 +108,35 @@ export function serializeSelection () {
   if (!selection.isCollapsed) return serializeRange(selection.getRangeAt(0));
 }
 
-// given a scope and start/end offsets that ignore white space, returns a range that takes the
-// white space into account and captures that content
-// XXX broken: needs to use the offset helpers
+// given a scope and normalised start/end offsets that ignore white space, returns a range using the
+// raw offsets
 export function rangeFromOffsets ($scope, startOffset, endOffset) {
   let node
   ,   it = document.createNodeIterator($scope, SHOW_TEXT, null, true)
-  ,   acc = 0
+  ,   accumulator = 0
   ,   startNode, endNode, relStartOffset, relEndOffset
   ;
 
-  // XXX
-  // is it all supposed to only work with trimming?
-  // this algorithm only works with trimming
+  // get the raw offsets, then simply operate only taking that into account
+  startOffset = denormalizeOffset(startOffset, $scope.textContent);
+  endOffset = denormalizeOffset(endOffset, $scope.textContent);
   while (node = it.nextNode()) {
-    // let textContent = node.textContent.trim();
-    let textContent = node.textContent.replace(/\s+/g, '');
-    // console.log('textContent', textContent, acc, textContent.length, startOffset);
-    if (relStartOffset === undefined && ((acc + textContent.length) >= startOffset)) {
+    let tc = node.textContent;
+    if (relStartOffset === undefined && ((accumulator + tc.length) >= startOffset)) {
       startNode = node;
-      // console.log('startNode', node);
-      // we add back the effect of having trimmed the textContent
-      relStartOffset = Math.max(0, startOffset - acc + (startNode.textContent.length -
-                                                        startNode.textContent.replace(/^\s+/, '').length));
-      // console.log('start offset', relStartOffset, startOffset, acc, startNode.textContent.length, startNode.textContent.replace(/^\s+/, '').length);
+      relStartOffset = startOffset - accumulator;
     }
-    if (relEndOffset === undefined && ((acc + textContent.length) >= endOffset)) {
+    if (relEndOffset === undefined && ((accumulator + tc.length) >= endOffset)) {
       endNode = node;
-      // console.log('endNode', node);
-      // ditto
-      relEndOffset = Math.max(0, endOffset - acc + (endNode.textContent.length -
-                                                    endNode.textContent.replace(/^\s+/, '').length));
-      console.log('end offset', relEndOffset, endOffset, acc, endNode.textContent.length, endNode.textContent.replace(/^\s+/, '').length);
+      relEndOffset = endOffset - accumulator;
       break;
     }
-    acc += textContent.length;
+    acc += tc.length;
   }
-  // console.log(relStartOffset, relEndOffset);
 
   var range = document.createRange();
   range.setStart(startNode, relStartOffset);
   range.setEnd(endNode, relEndOffset);
-
   return range;
 };
 
