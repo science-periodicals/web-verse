@@ -13,14 +13,14 @@ var cases = [
     html: '<p> aha <span>abc</span></p>',
     parent: 'p',
     child:  'span',
-    offsets: [5, 8]
+    offsets: [4, 7]
   },
   {
     desc: 'should work on second child',
-    html: '<p> aha <span>abc</span> hmm <strong> x </strong></p>',
+    html: '<p> aha <span>abc</span>   hmm <strong> x </strong></p>',
     parent: 'p',
     child:  'strong',
-    offsets: [13, 16]
+    offsets: [12, 14]
   },
 ];
 

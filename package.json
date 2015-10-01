@@ -2,7 +2,7 @@
   "name": "web-verse",
   "version": "0.4.0",
   "description": "dynamic paragraph-specific anchor links",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "build-node": "rm -rf dist && babel src --out-dir dist",
     "build-browser": "browserify src/index.js | uglifyjs - -c warnings=false -m > web-verse.min.js",
@@ -13,7 +13,8 @@
     "watch": "concurrent --kill-others --prefix command 'npm run watch-node' 'npm run watch-browser'",
     "test": "karma start karma.conf-ci.js",
     "test-local": "karma start karma.conf.js",
-    "pretest": "npm run build"
+    "pretest": "npm run build",
+    "prepublish": "npm run build"
   },
   "repository": {
     "type": "git",

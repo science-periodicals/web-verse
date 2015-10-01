@@ -212,7 +212,8 @@ export function getOffsets (range, $scope) {
   return { startOffset: normalizeOffset(rawStartOffset, txt), endOffset: normalizeOffset(rawEndOffset, txt) };
 }
 
-// get the raw offsets of the start and end of a given child text node (or element containing one)
+// get the normalised offsets of the start and end of a given child text node (or element containing
+// one)
 export function getChildOffsets ($parent, $child) {
   let startTextNode = textNodeFromNode($child);
 
@@ -229,7 +230,8 @@ export function getChildOffsets ($parent, $child) {
     }
     textNodes.push(node);
   }
-  return { startOffset: rawStartOffset, endOffset: rawEndOffset };
+  return { startOffset: normalizeOffset(rawStartOffset, $parent.textContent)
+         , endOffset:   normalizeOffset(rawEndOffset, $parent.textContent) };
 };
 
 // given a scope and a string, it will find all instances of that string within the
