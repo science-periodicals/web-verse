@@ -8,9 +8,7 @@ describe('WebVerse Basics', function () {
   });
 
   describe('addIdentifiers', function () {
-    // this is the output of crypto.createHash('sha1').update('Hello', 'utf8').digest('hex');
     var hashedHello = '8b1a9953c4611296a827abf8c47804d7'
-      // same with 'world'
       , hashedWorld = '7d793037a0760186574b0282f2f435e7'
     ;
 

@@ -65,9 +65,8 @@ export function createKey ($el) {
 }
 
 // create a md5 hash for the trimmed content of the given element
-// XXX broken: normalise the text
 export function createHash ($el) {
-  return SparkMD5.hash(trim($el.textContent));
+  return SparkMD5.hash(normalizeText($el.textContent));
 }
 
 // given a range, find the enclosing block element that is part of our whitelist
