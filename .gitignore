@@ -32,4 +32,5 @@ scratch/
 sauce.json
 dist
 web-verse.min.js
+web-verse.js
 coverage/

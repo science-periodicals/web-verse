@@ -135,7 +135,7 @@ module.exports = function (config) {
     customLaunchers: customLaunchers,
     reporters: ['dots', 'saucelabs', 'coverage', 'coveralls'],
     preprocessors: {
-      'web-verse.min.js': ['coverage']
+      'web-verse.js': ['coverage']
     },
     coverageReporter: {
       type: 'lcov',
