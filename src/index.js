@@ -44,7 +44,7 @@ export let citeable = ['P', 'LI', 'DD', 'DT', 'BLOCKQUOTE', 'H1', 'H2', 'H3', 'H
 export function createKey ($el) {
   let key = '';
   let len = 6;
-  let txt = trim(($el.textContent || '').replace(/[^\w\. ]+/gui, ''));
+  let txt = normalizeText(($el.textContent || '')).replace(/[^\w\. ]+/gui, '');
 
   if (txt && txt.length > 1) {
     let lines = sbd.sentences(txt).map(x => trim(x)).filter(x => x);
@@ -91,11 +91,10 @@ export function serializeRange (range, $scope = getScope(range)) {
 
   return {
     $scope: $scope,
-    sha1: createHash($scope),
+    hash: createHash($scope),
     key: createKey($scope),
     startOffset: offsets.startOffset,
-    endOffset: offsets.endOffset,
-    text: trim(range.toString())
+    endOffset: offsets.endOffset
   };
 }
 
@@ -181,10 +180,6 @@ function textNodeFromNode (container) {
     for (let i = 0; i < container.childNodes.length; i++) {
       if (container.childNodes[i].nodeType === TEXT_NODE) return container.childNodes[i];
   }
-}
-
-function trimmedLength (nodes, index) {
-  return nodes.slice(0, index).reduce((a, b) => { return a + trim(b.textContent).length; }, 0);
 }
 
 // Given a range and an element scope, return the start and end offsets into the text that ignore
