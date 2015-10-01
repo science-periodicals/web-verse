@@ -195,28 +195,9 @@ then fully prepared to be manipulated using for isntance `findKey()`.
 
 ## Development
 
-The best thing when
-
-"build-node": "rm -rf dist && babel src --out-dir dist",
-"build-browser": "browserify src/index.js | uglifyjs - -c warnings=false -m > web-verse.min.js",
-"show-build": "browserify --deps src/index.js",
-"build": "npm run build-node && npm run build-browser",
-"watch-node": "nodemon -e js -w src/ --exec 'npm run build-node'",
-"watch-browser": "watchify src/index.js -o 'uglifyjs - -c warnings=false -m > web-verse.min.js'",
-"watch": "concurrent --kill-others --prefix command 'npm run watch-node' 'npm run watch-browser'",
-"test": "karma start karma.conf-ci.js",
-"test-local": "karma start karma.conf.js",
-"pretest": "npm run build",
-"prepublish": "npm run build"
-
-
-`npm run build` -> create `web-verse.min.js`
-
-## Tests
-
-`npm run test`
-
-
+The best thing when developing is to `npm run watch`. This will build both Node and browser versions
+continuously. It is also a good idea to `npm run test-local`, which will keep the Karma tests
+running (just in Chrome, so as not to be too invasive) whenever you make changes.
 
 ---
 
