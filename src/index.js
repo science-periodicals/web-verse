@@ -72,16 +72,13 @@ export function createHash ($el) {
 // given a range, find the enclosing block element that is part of our whitelist
 export function getScope (range) {
   var $scope = range.commonAncestorContainer;
-  if ($scope.nodeType === TEXT_NODE) {
-    $scope = $scope.parentElement; //get closest Element
-  };
+  // get closest Element
+  if ($scope.nodeType === TEXT_NODE) $scope = $scope.parentElement;
 
   // get closest citeable element
   while (!~citeable.indexOf($scope.tagName)) {
     $scope = $scope.parentElement;
-    if ($scope.tagName === 'HTML') {
-      return;
-    }
+    if ($scope.tagName === 'HTML') return;
   }
   return $scope;
 }
