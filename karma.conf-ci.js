@@ -134,6 +134,9 @@ module.exports = function (config) {
     captureTimeout: 120000,
     customLaunchers: customLaunchers,
     reporters: ['dots', 'saucelabs', 'coverage', 'coveralls'],
+    preprocessors: {
+      'web-verse.min.js': ['coverage']
+    },
     coverageReporter: {
       type: 'lcov',
       dir:  'coverage/'
