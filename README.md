@@ -53,12 +53,32 @@ with the paragraph's fingerprint, this gives us an address selecting just that w
 
 `npm install web-verse`
 
-It is primarily a client-side library (~7k minizipped), just include the `web-verse.min.js` script
+### In the browser
+
+This is primarily a client-side library (~7k minizipped), just include the `web-verse.min.js` script
 that comes with the distribution.
 
-Note however that nothing prevents it to work with Node, but some methods require a DOM
-implementation that supports Ranges, which for instance is *not* the case of `jsdom` as of this
-writing.
+### In Node
+
+Web Verse works with Node, but you have to bring your own DOM. Currently, the best option is likely
+to be `jsdom`, but it has limitations due to it not supporting `Range`s.
+
+The following subset of methods works with Node and `jsdom`:
+
+* `createKey()`
+* `createHash()`
+* `getScope()`, but only with a `node` argument
+* `serializeNode()`
+* `findKey()`
+* `addIdentifiers()`
+* `getChildOffsets()`
+* `normalizeText()`
+* `normalizeOffset()`
+* `denormalizeOffset()`
+
+These should normally be more than enough to carry out the sort of operations that you are likely to
+want to do on the server (as opposed to, say, getting the user's selection and producing a link from
+it).
 
 ## API
 
