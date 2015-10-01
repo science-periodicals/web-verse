@@ -11,6 +11,11 @@ var cases = [
     out: 'a b'
   },
   {
+    desc: 'should normalise repeatedly',
+    in: 'a   b    c',
+    out: 'a b c'
+  },
+  {
     desc: 'hairy',
     in: '\uFEFF\n \ta\r \nb\xA0\t\r',
     out: 'a b'

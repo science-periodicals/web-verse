@@ -253,7 +253,6 @@ export function getChildOffsets ($parent, $child) {
 
 // given a scope and a string, it will find all instances of that string within the
 // scope, and use that to create white-space-independent ranges
-// XXX broken: use offset helpers
 export function getRangesFromText ($scope, text) {
   // make the text safe to search, but spaces in it need to match \s+
   text = escapeRegex(trim(text)).replace(RE_SPACES_GLOBAL, SPACE + '+');
@@ -263,25 +262,21 @@ export function getRangesFromText ($scope, text) {
   //  We need to get an offset that ignores whitespace, BUT the regex needs to match
   //  if it contains whitespace.
   // So we:
-  //  get all match indices while trimming *nothing*;
-  //  then, for each index, remove the amount of WS that is *before* it, get the length of the
-  //  match (so that any space becomes a match for \s+), and remove the space from the length of the
-  //  match
+  //  get all match indices on raw text
+  //  map start and end indices to normalised text
   let result, matchIndexes = [];
   while ((result = re.exec(tc)) !== null) {
-    matchIndexes.push({ index: result.index, length: result[0].length - (result[0].match(RE_SPACE_GLOBAL) || []).length });
+    matchIndexes.push({ index: result.index, length: result[0].length });
   }
 
   return matchIndexes.map(function (match) {
-    match.index -= (tc.substr(0, match.index).match(RE_SPACE_GLOBAL) || []).length;
-    console.log('numbers are', match.index, match.length);
-    return rangeFromOffsets($scope, match.index, match.index + match.length);
+    return rangeFromOffsets($scope, normalizeOffset(match.index, tc), normalizeOffset(match.index + match.length, tc));
   });
 };
 
 // returns text that has been trimmed and with all white space normalised to space
 export function normalizeText (text) {
-  return trim(text).replace(RE_SPACES, ' ');
+  return trim(text).replace(RE_SPACES_GLOBAL, ' ');
 }
 
 // Takes a raw offset into a raw text and returns the offset of the same character in a normalised
@@ -289,7 +284,7 @@ export function normalizeText (text) {
 export function normalizeOffset (rawOffset, rawText) {
   let workText = rawText.substring(0, rawOffset);
   // the length difference once left-trim and space normalisation have happened
-  let delta = workText.length - workText.replace(RE_TRIM_LEFT, '').replace(RE_SPACES, ' ').length;
+  let delta = workText.length - workText.replace(RE_TRIM_LEFT, '').replace(RE_SPACES_GLOBAL, ' ').length;
   return rawOffset - delta;
 }
 

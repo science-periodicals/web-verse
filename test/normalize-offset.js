@@ -38,9 +38,15 @@ var cases = [
   },
   {
     desc: 'should handle between',
-    text: ' a b ',
-    raw: 2,
-    norm: 1
+    text: ' a  b ',
+    raw: 4,
+    norm: 2
+  },
+  {
+    desc: 'should handle case from ranges',
+    text: 'a b  a b',
+    raw: 5,
+    norm: 4
   },
 ];
 
