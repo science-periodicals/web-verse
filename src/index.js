@@ -73,11 +73,11 @@ export function createHash ($el) {
 export function getScope (nodeOrRange) {
   var $scope = nodeOrRange.nodeType ? nodeOrRange : nodeOrRange.commonAncestorContainer;
   // get closest Element
-  if ($scope.nodeType === TEXT_NODE) $scope = $scope.parentElement;
+  if ($scope.nodeType === TEXT_NODE) $scope = $scope.parentNode;
 
   // get closest citeable element
   while (!~citeable.indexOf($scope.tagName)) {
-    $scope = $scope.parentElement;
+    $scope = $scope.parentNode;
     if ($scope.tagName === 'HTML') return;
   }
   return $scope;
