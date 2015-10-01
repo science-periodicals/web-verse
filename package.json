@@ -1,7 +1,7 @@
 {
   "name": "web-verse",
-  "version": "0.4.0",
-  "description": "dynamic paragraph-specific anchor links",
+  "version": "1.0.0",
+  "description": "Toolbox for deep, resilient, markup-invariant linking into HTML documents without their coöperation",
   "main": "dist/index.js",
   "scripts": {
     "build-node": "rm -rf dist && babel src --out-dir dist",

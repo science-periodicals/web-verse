@@ -4,7 +4,7 @@
 [![Sauce Test Status](https://saucelabs.com/browser-matrix/robinberjon.svg)](https://saucelabs.com/u/robinberjon)
 [![Coverage Status](https://coveralls.io/repos/scienceai/web-verse/badge.svg?branch=master&service=github)](https://coveralls.io/github/scienceai/web-verse?branch=master)
 
-Web Verse enables deep-linking into HTML text, without requiring specific cooperation from the
+Web Verse enables deep-linking into HTML text, without requiring specific coöperation from the
 content (such as adding `id` attributes everywhere). It can be used to generate locator keys for
 content inside of a page that are reasonably resilient to markup modifications as well as to edits
 to the text itself. As such, it can be used to build an annotation system for text that is likely
