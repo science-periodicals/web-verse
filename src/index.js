@@ -140,7 +140,7 @@ export function rangeFromOffsets ($scope, startOffset, endOffset) {
       relEndOffset = endOffset - accumulator;
       break;
     }
-    acc += tc.length;
+    accumulator += tc.length;
   }
 
   var range = $scope.ownerDocument.createRange();
