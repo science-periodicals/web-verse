@@ -28,7 +28,7 @@ const RE_TRIM_RIGHT_CAPTURE = new RegExp('(' + SPACE + '*)$');
 const RE_TRIM = new RegExp('^' + SPACE + '*|' + SPACE + '*$', 'g');
 const leftTrim = (str) => String(str).replace(RE_TRIM_LEFT, '');
 const rightTrim = (str) => String(str).replace(RE_TRIM_RIGHT, '');
-const trim = (str) => String(str).replace(RE_TRIM, '');
+const trim = (str) => String(str || '').replace(RE_TRIM, '');
 export let citeable = ['P', 'LI', 'DD', 'DT', 'BLOCKQUOTE', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
                        'FIGCAPTION', 'CAPTION', 'ASIDE', 'SECTION', 'ARTICLE', 'BODY', 'DIV', 'MAIN']
 ;
@@ -66,7 +66,7 @@ export function createKey ($el) {
 
 // create a md5 hash for the trimmed content of the given element
 export function createHash ($el) {
-  return SparkMD5.hash(normalizeText($el.textContent || $el)); // `|| $el` so that `$el` can be a string
+  return SparkMD5.hash(normalizeText($el.textContent || $el || '')); // `|| $el` so that `$el` can be a string
 }
 
 // given a node or range, find the enclosing block element that is part of our whitelist
@@ -272,7 +272,7 @@ export function getRangesFromText ($scope, text) {
 
 // returns text that has been trimmed and with all white space normalised to space
 export function normalizeText (text) {
-  return trim(text).replace(RE_SPACES_GLOBAL, ' ');
+  return trim(text || '').replace(RE_SPACES_GLOBAL, ' ');
 }
 
 // Takes a raw offset into a raw text and returns the offset of the same character in a normalised
