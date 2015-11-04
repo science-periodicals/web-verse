@@ -30,7 +30,8 @@ const leftTrim = (str) => String(str).replace(RE_TRIM_LEFT, '');
 const rightTrim = (str) => String(str).replace(RE_TRIM_RIGHT, '');
 const trim = (str) => String(str || '').replace(RE_TRIM, '');
 export let citeable = ['P', 'LI', 'DD', 'DT', 'BLOCKQUOTE', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',
-                       'FIGCAPTION', 'CAPTION', 'ASIDE', 'SECTION', 'ARTICLE', 'BODY', 'DIV', 'MAIN']
+                       'FIGCAPTION', 'CAPTION', 'ASIDE', 'SECTION', 'ARTICLE', 'BODY', 'DIV', 'MAIN',
+                       'MATH']
 ;
 
 /**
