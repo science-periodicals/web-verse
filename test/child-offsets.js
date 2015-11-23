@@ -22,6 +22,20 @@ var cases = [
     child:  'strong',
     offsets: [12, 14]
   },
+  {
+    desc: 'should work when first text node is not a direct child of the child',
+    html: '<article><section><p>hello</p></section></article>',
+    parent: 'article',
+    child:  'section',
+    offsets: [0, 5]
+  },
+  {
+    desc: 'should work when the last text node is not the same node as the first text node',
+    html: '<article><section><h2>hello</h2><p>world</p></section><section><h2>hola</h2></section></article>',
+    parent: 'article',
+    child:  'section',
+    offsets: [0, 10]
+  }
 ];
 
 describe('WebVerse getChildOffsets', function () {

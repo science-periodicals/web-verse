@@ -189,18 +189,32 @@ export function addIdentifiers ($doc) {
   return $doc;
 };
 
-function textNodeFromNode (container) {
-    if (container.nodeType === TEXT_NODE) return container;
-    for (let i = 0; i < container.childNodes.length; i++) {
-      if (container.childNodes[i].nodeType === TEXT_NODE) return container.childNodes[i];
+function textNodeFromNode ($container) {
+  if ($container.nodeType === TEXT_NODE) return $container;
+  let $node;
+  let it = $container.ownerDocument.createNodeIterator($container, SHOW_TEXT, null, true);
+  while ($node = it.nextNode()) {
+    if ($node.nodeType === TEXT_NODE) return $node;
   }
 }
+
+function lastTextNode ($container) {
+  if ($container.nodeType === TEXT_NODE) return $container;
+  let $node, $lastTextNode;
+  let it = $container.ownerDocument.createNodeIterator($container, SHOW_TEXT, null, true);
+  while ($node = it.nextNode()) {
+    if ($node.nodeType === TEXT_NODE) $lastTextNode = $node;
+  }
+
+  return $lastTextNode;
+}
+
 
 // Given a range and an element scope, return the start and end offsets into the text that ignore
 // white space.
 export function getOffsets (range, $scope) {
   let startTextNode = textNodeFromNode(range.startContainer)
-  ,   endTextNode = textNodeFromNode(range.endContainer)
+  ,   endTextNode = lastTextNode(range.endContainer)
   ;
 
   let node, textNodes = []
@@ -209,15 +223,11 @@ export function getOffsets (range, $scope) {
   while (node = it.nextNode()) {
     if (node === startTextNode) {
       rawStartOffset = textNodes.map(tn => tn.textContent.length)
-                                .reduce((a, b) => { return a + b; }, 0) +
-                                range.startOffset
-      ;
+                                .reduce((a, b) => { return a + b; }, range.startOffset);
     }
     if (node === endTextNode) {
       rawEndOffset = textNodes.map(tn => tn.textContent.length)
-                              .reduce((a, b) => { return a + b; }, 0) +
-                              range.endOffset
-      ;
+                              .reduce((a, b) => { return a + b; }, range.endOffset);
     }
     textNodes.push(node);
     if (rawEndOffset !== undefined) break;
@@ -229,7 +239,9 @@ export function getOffsets (range, $scope) {
 // get the normalised offsets of the start and end of a given child text node (or element containing
 // one)
 export function getChildOffsets ($parent, $child) {
-  let startTextNode = textNodeFromNode($child);
+  let startTextNode = textNodeFromNode($child)
+  ,   endTextNode = lastTextNode($child)
+  ;
 
   let node
   ,   rawStartOffset, rawEndOffset
@@ -240,10 +252,15 @@ export function getChildOffsets ($parent, $child) {
       rawStartOffset = textNodes.map(tn => tn.textContent.length)
                                 .reduce((a, b) => { return a + b; }, 0)
       ;
-      rawEndOffset = rawStartOffset + node.textContent.length;
+    }
+    if (node === endTextNode) {
+      rawEndOffset = textNodes.map(tn => tn.textContent.length)
+                              .reduce((a, b) => { return a + b; }, node.textContent.length);
     }
     textNodes.push(node);
+    if (rawEndOffset !== undefined) break;
   }
+
   return { startOffset: normalizeOffset(rawStartOffset, $parent.textContent)
          , endOffset:   normalizeOffset(rawEndOffset, $parent.textContent) };
 };
