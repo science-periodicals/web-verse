@@ -242,7 +242,7 @@ export function getChildOffsets ($parent, $child) {
       startOffset: undefined,
       endOffset:   undefined
     };
-  };
+  }
 
   let startTextNode = textNodeFromNode($child);
   let node
