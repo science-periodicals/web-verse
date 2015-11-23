@@ -199,6 +199,14 @@ function textNodeFromNode (container) {
 // Given a range and an element scope, return the start and end offsets into the text that ignore
 // white space.
 export function getOffsets (range, $scope) {
+  // if the range contains all the potential text content => no offsets
+  if (range.toString().trim() === $scope.textContent.trim()) {
+    return {
+      startOffset: undefined,
+      endOffset:   undefined
+    };
+  }
+
   let startTextNode = textNodeFromNode(range.startContainer)
   ,   endTextNode = textNodeFromNode(range.endContainer)
   ;
@@ -229,8 +237,14 @@ export function getOffsets (range, $scope) {
 // get the normalised offsets of the start and end of a given child text node (or element containing
 // one)
 export function getChildOffsets ($parent, $child) {
-  let startTextNode = textNodeFromNode($child);
+  if ($parent ===  $child) {
+    return {
+      startOffset: undefined,
+      endOffset:   undefined
+    };
+  };
 
+  let startTextNode = textNodeFromNode($child);
   let node
   ,   rawStartOffset, rawEndOffset
   ,   textNodes = []
