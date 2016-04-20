@@ -71,7 +71,6 @@ The following subset of methods works with Node and `jsdom`:
 * `getScope()`, but only with a `node` argument
 * `serializeNode()`
 * `findKey()`
-* `addIdentifiers()`
 * `getChildOffsets()`
 * `normalizeText()`
 * `normalizeOffset()`
@@ -209,15 +208,6 @@ Same as `getOffsets()` but uses a `$child` text node (or a `$child` element cont
 determining the offsets inside a `$parent` element. Returns `startOffset` and `endOffset` fields
 being the offsets normalised to the content of the `$parent`.
 
-### `WebVerse.addIdentifiers(document)`
-
-Given a document, finds all the `citeable` elements and decorates them with a `data-id` that is a
-generated short ID (with a strong promise of being unique, while a lot shorter and nicer than a
-UUID), a `data-hash` from `createHash()` on that element, and a `data-key` from `createKey()`.
-
-This is a pretty invasive method, it is recommended to only use it if you have control over the
-document's lifecycle and need this level of keying. It does have the advantage that the document is
-then fully prepared to be manipulated using for isntance `findKey()`.
 
 ## Development
 

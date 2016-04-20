@@ -3,7 +3,6 @@
 
 import SparkMD5 from 'spark-md5';
 import sbd from 'sbd';
-import shortid from 'shortid';
 import levenshtein from 'fast-levenshtein';
 import escapeRegex from 'escape-regex-string';
 
@@ -174,19 +173,6 @@ export function findKey (target, candidates) {
   }
 
   return x;
-};
-
-// Given a document object, add data-id, data-hash, and data-key to all citeables.
-// Only call this if you have control over the document's lifecycle.
-export function addIdentifiers ($doc) {
-  Array.prototype.forEach.call($doc.body.getElementsByTagName('*'), $el => {
-    if (~citeable.indexOf($el.tagName)) {
-      $el.setAttribute('data-id', shortid.generate());
-      $el.setAttribute('data-hash', createHash($el));
-      $el.setAttribute('data-key', createKey($el));
-    }
-  });
-  return $doc;
 };
 
 function textNodeFromNode ($container) {
