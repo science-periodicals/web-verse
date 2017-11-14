@@ -1,9 +1,6 @@
-
 # Web Verse
-[![npm version](https://badge.fury.io/js/web-verse.svg)](http://badge.fury.io/js/web-verse)
-[![Coverage Status](https://coveralls.io/repos/scienceai/web-verse/badge.svg?branch=master&service=github)](https://coveralls.io/github/scienceai/web-verse?branch=master)
 
-[![Sauce Test Status](https://saucelabs.com/browser-matrix/robinberjon.svg)](https://saucelabs.com/u/robinberjon)
+[![styled with prettier](https://img.shields.io/badge/styled_with-prettier-ff69b4.svg)](https://github.com/prettier/prettier)
 
 Web Verse enables deep-linking into HTML text, without requiring specific coöperation from the
 content (such as adding `id` attributes everywhere). It can be used to generate locator keys for

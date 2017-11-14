@@ -1,19 +1,19 @@
 {
   "name": "web-verse",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Toolbox for deep, resilient, markup-invariant linking into HTML documents without their coöperation",
   "main": "dist/index.js",
   "module": "src/index.js",
   "scripts": {
     "build-node": "rm -rf dist && babel src --out-dir dist",
-    "build-cover": "browserify src/index.js -t [ babelify --presets [ es2015 ] ] -o web-verse.js",
-    "build-browser": "browserify src/index.js -t [ babelify --presets [ es2015 ] ] | uglifyjs - -c warnings=false -m > web-verse.min.js",
+    "build-cover": "browserify src/index.js -o web-verse.js",
+    "build-browser": "browserify src/index.js | uglifyjs - -c warnings=false -m > web-verse.min.js",
     "show-build": "browserify --deps src/index.js",
     "build": "npm run build-node && npm run build-browser && npm run build-cover",
     "watch-node": "nodemon -e js -w src/ --exec 'npm run build-node'",
     "watch-cover": "watchify src/index.js -o web-verse.js",
     "watch-browser": "watchify src/index.js -o 'uglifyjs - -c warnings=false -m > web-verse.min.js'",
-    "watch": "concurrent --kill-others --prefix command 'npm run watch-node' 'npm run watch-browser' 'npm run watch-cover'",
+    "watch": "concurrently --kill-others --prefix command 'npm run watch-node' 'npm run watch-browser' 'npm run watch-cover'",
     "test": "karma start karma.conf-ci.js",
     "test-local": "karma start karma.conf.js",
     "pretest": "npm run build",
@@ -21,7 +21,18 @@
   },
   "babel": {
     "presets": [
-      "es2015"
+      [
+        "env",
+        {
+          "targets": {
+            "browsers": [
+              "last 2 versions",
+              "safari >= 7"
+            ],
+            "node": "6.9.1"
+          }
+        }
+      ]
     ]
   },
   "repository": {
@@ -35,11 +46,7 @@
   ],
   "contributors": [
     "Sebastien Ballesteros",
-    {
-      "name": "Robin Berjon",
-      "email": "robin@science.ai",
-      "url": "http://berjon.com/"
-    }
+    "Robin Berjon"
   ],
   "license": "Apache-2.0",
   "bugs": {
@@ -47,38 +54,46 @@
   },
   "homepage": "https://github.com/scienceai/web-verse",
   "dependencies": {
-    "escape-regex-string": "1.0.4",
+    "escape-regex-string": "^1.0.4",
     "fast-levenshtein": "^2.0.6",
     "sbd": "^1.0.12",
     "spark-md5": "^3.0.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.23.0",
-    "babel-preset-es2015": "^6.22.0",
-    "babelify": "^7.3.0",
-    "browserify": "^14.1.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "babelify": "^8.0.0",
+    "browserify": "^14.5.0",
     "chai": "^3.5.0",
     "chalk": "^1.1.3",
-    "concurrently": "^3.3.0",
+    "concurrently": "^3.5.0",
     "eslint": "^3.16.1",
     "jsdom": "^9.11.0",
-    "karma": "^1.5.0",
-    "karma-chai": "0.1.0",
-    "karma-chrome-launcher": "^2.0.0",
+    "karma": "^1.7.1",
+    "karma-chai": "^0.1.0",
+    "karma-chrome-launcher": "^2.2.0",
     "karma-coverage": "^1.1.1",
-    "karma-coveralls": "1.1.2",
-    "karma-firefox-launcher": "^1.0.0",
+    "karma-coveralls": "^1.1.2",
+    "karma-firefox-launcher": "^1.0.1",
     "karma-mocha": "^1.3.0",
     "karma-safari-launcher": "^1.0.0",
-    "karma-sauce-launcher": "^1.1.0",
+    "karma-sauce-launcher": "^1.2.0",
     "mocha": "^3.2.0",
-    "nodemon": "^1.11.0",
+    "nodemon": "^1.12.1",
     "uglify-js": "^2.7.5",
     "watchify": "^3.9.0"
   },
   "browserify": {
     "transform": [
-      "babelify"
+      [
+        "babelify",
+        {
+          "presets": [
+            "env"
+          ]
+        }
+      ]
     ]
   }
 }
