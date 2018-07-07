@@ -10,7 +10,7 @@ to be edited over time. Obviously it is not
 [altogether unstoppable][no-power-in-the-verse] but it offers good enough resilience to
 be used in production systems.
 
-It was inspired by [Emphasis][nyt] by Michael Donohoe, but leverages the [Range interface][ranges]
+It was inspired by [Emphasis][nyt] by Michael Donohoe and [Ted Nelson parallel markup](https://www.xml.com/pub/a/w3j/s3.nelson.html), but leverages the [Range interface][ranges]
 and [selection object][selections].
 
 We do not provide direct support for instance for mapping a URL's hash containing a Web Verse key
