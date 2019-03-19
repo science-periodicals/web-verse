@@ -3,7 +3,6 @@
   "version": "2.1.1",
   "description": "Toolbox for deep, resilient, markup-invariant linking into HTML documents without their coöperation",
   "main": "dist/index.js",
-  "module": "src/index.js",
   "scripts": {
     "build-node": "rm -rf dist && babel src --out-dir dist",
     "build-cover": "browserify src/index.js -o web-verse.js",
@@ -24,13 +23,7 @@
       [
         "env",
         {
-          "targets": {
-            "browsers": [
-              "last 2 versions",
-              "safari >= 7"
-            ],
-            "node": "6.9.1"
-          }
+          "targets": "> 0.25%, not dead"
         }
       ]
     ]
