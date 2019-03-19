@@ -1,6 +1,6 @@
 {
   "name": "web-verse",
-  "version": "2.1.1",
+  "version": "2.1.2",
   "description": "Toolbox for deep, resilient, markup-invariant linking into HTML documents without their coöperation",
   "main": "dist/index.js",
   "scripts": {
