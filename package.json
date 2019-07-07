@@ -30,7 +30,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/scienceai/web-verse.git"
+    "url": "https://github.com/science-periodicals/web-verse.git"
   },
   "keywords": [
     "deep",
@@ -43,9 +43,9 @@
   ],
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/scienceai/web-verse/issues"
+    "url": "https://github.com/science-periodicals/web-verse/issues"
   },
-  "homepage": "https://github.com/scienceai/web-verse",
+  "homepage": "https://github.com/science-periodicals/web-verse",
   "dependencies": {
     "escape-regex-string": "^1.0.4",
     "fast-levenshtein": "^2.0.6",
